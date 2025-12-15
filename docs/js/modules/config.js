@@ -254,16 +254,122 @@ class ConfigManager {
     }
 
     /**
+     * Parse dataset size string to bytes.
+     * Supports common units: B, KB/MB/GB/TB, KiB/MiB/GiB/TiB (case-insensitive).
+     * @param {unknown} size
+     * @returns {number|null} Size in bytes, or null if unparseable
+     */
+    static parseDatasetSizeToBytes(size) {
+        if (size === undefined || size === null) return null;
+
+        // Allow passing a numeric value that represents bytes
+        if (typeof size === 'number' && isFinite(size)) {
+            return size >= 0 ? size : null;
+        }
+
+        if (typeof size !== 'string') return null;
+
+        const raw = size.trim();
+        if (!raw) return null;
+
+        // Match patterns like: "12GB", "12.3 GB", "1.2TiB", "800 MB", "1024B"
+        const match = raw.match(/^([0-9]+(?:\.[0-9]+)?)\s*([a-zA-Z]+)?$/);
+        if (!match) return null;
+
+        const value = parseFloat(match[1]);
+        if (!isFinite(value)) return null;
+
+        const unitRaw = (match[2] || 'B').trim().toUpperCase();
+
+        // Normalize some common variants
+        const unit = unitRaw
+            .replace(/^BYTES?$/, 'B')
+            .replace(/^KIB$/, 'KIB')
+            .replace(/^MIB$/, 'MIB')
+            .replace(/^GIB$/, 'GIB')
+            .replace(/^TIB$/, 'TIB');
+
+        const SI = {
+            B: 1,
+            KB: 1e3,
+            MB: 1e6,
+            GB: 1e9,
+            TB: 1e12
+        };
+
+        const IEC = {
+            KIB: 1024,
+            MIB: 1024 ** 2,
+            GIB: 1024 ** 3,
+            TIB: 1024 ** 4
+        };
+
+        if (SI[unit] !== undefined) return value * SI[unit];
+        if (IEC[unit] !== undefined) return value * IEC[unit];
+
+        // Extra tolerance: allow shorthand like "G", "T"
+        if (unit === 'K') return value * SI.KB;
+        if (unit === 'M') return value * SI.MB;
+        if (unit === 'G') return value * SI.GB;
+        if (unit === 'T') return value * SI.TB;
+
+        return null;
+    }
+
+    /**
+     * Build the required storage comment for a list of datasets.
+     * Rules:
+     * - Use TB if total >= 1TB, otherwise GB
+     * - Keep 1 decimal place
+     * - If any dataset size is missing/unparseable, return placeholder ---GB/TB
+     * @param {string[]} datasetPaths
+     * @param {Map<string, Dataset>|null|undefined} datasetMap
+     * @returns {string}
+     */
+    static buildRequiredStorageComment(datasetPaths, datasetMap) {
+        if (!Array.isArray(datasetPaths) || datasetPaths.length === 0) {
+            return '# Required storage:  0.0GB.\n# Disk usage may be larger.';
+        }
+
+        if (!datasetMap || typeof datasetMap.get !== 'function') {
+            return '# Required storage:  ---GB/TB.\n# Disk usage may be larger.';
+        }
+
+        let totalBytes = 0;
+        for (const path of datasetPaths) {
+            const ds = datasetMap.get(path);
+            const size = ds?.datasetSize ?? ds?.raw?.dataset_size;
+            const bytes = this.parseDatasetSizeToBytes(size);
+            if (bytes === null) {
+                return '# Required storage:  ---GB/TB.\n# Disk usage may be larger.';
+            }
+            totalBytes += bytes;
+        }
+
+        const TB = 1e12;
+        const GB = 1e9;
+        const useTB = totalBytes >= TB;
+        const value = useTB ? (totalBytes / TB) : (totalBytes / GB);
+        const formatted = (Math.round(value * 10) / 10).toFixed(1);
+        const unit = useTB ? 'TB' : 'GB';
+        return `# Required storage:  ${formatted}${unit}.\n# Disk usage may be larger.`;
+    }
+
+    /**
      * Generate download command string
      * @param {string} hub - Hub name (e.g., 'modelscope', 'huggingface')
      * @param {string[]} datasets - Array of dataset paths
+     * @param {Map<string, Dataset>} [datasetMap] - Optional dataset map for size calculation
      * @returns {string} Generated download command
      */
-    static generateDownloadCommand(hub, datasets) {
+    static generateDownloadCommand(hub, datasets, datasetMap = undefined) {
         const config = this.getConfig().downloadCommand;
         
+        // First line: storage estimate comment (no blank line)
+        const storageComment = this.buildRequiredStorageComment(datasets, datasetMap);
+
         // Format: robocoin-download \
-        let command = `${config.command}${config.lineContinuation}${config.lineBreak}`;
+        let command = `${storageComment}${config.lineBreak}${config.command}${config.lineContinuation}${config.lineBreak}`;
         
         // Format: --hub modelscope \
         command += `${config.hubParam} ${hub}${config.lineContinuation}${config.lineBreak}`;

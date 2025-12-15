@@ -192,7 +192,8 @@ export class SelectionPanelManager {
             requestAnimationFrame(() => {
                 output.textContent = ConfigManager.generateDownloadCommand(
                     this.currentHub,
-                    this._sortedPathsCache
+                    this._sortedPathsCache,
+                    this.datasetMap
                 );
             });
         }, 100);

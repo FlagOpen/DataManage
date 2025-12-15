@@ -4,6 +4,7 @@
  */
 
 import ConfigManager from './config.js';
+import dataManager from './data-manager.js';
 import toastManager from './toast-manager.js';
 
 /**
@@ -31,7 +32,8 @@ class DownloadManager {
         try {
             const command = ConfigManager.generateDownloadCommand(
                 this.currentHub,
-                [datasetPath]
+                [datasetPath],
+                dataManager?.datasetMap
             );
 
             await this.copyToClipboard(command);
