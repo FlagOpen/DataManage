@@ -192,7 +192,6 @@ const Templates = {
             </div>
             <div class="video-hover-overlay">
                 <div class="video-hover-content">
-                    <div class="hover-click-hint">(Click title to see more)</div>
                     <div class="video-hover-title" data-path="${ds.path}" style="cursor: pointer;">${displayName}</div>
                     ${hoverOriginalLabel}
                     <div class="video-hover-details">${this.buildHoverDetailsHTML(ds)}</div>
