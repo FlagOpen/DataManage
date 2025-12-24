@@ -15,6 +15,10 @@
     padding: 0.5rem 1.5rem;
     border-bottom: 1px solid var(--color-border);
     background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
 }
 
 .selection-panel-title {
@@ -23,6 +27,28 @@
     color: var(--color-text-primary);
     margin: 0;
     text-align: center;
+}
+
+.btn-clear-selection {
+    position: absolute;
+    right: 1rem;
+    background: none;
+    border: none;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    padding: 0.4rem;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.btn-clear-selection:hover {
+    background: var(--color-danger);
+    color: white;
+    box-shadow: var(--shadow-sm);
+    transform: scale(1.05);
 }
 
 .selection-title {

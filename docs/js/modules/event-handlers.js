@@ -638,6 +638,23 @@ export class EventHandlers {
             });
         }
 
+        // Clear Selection Button (Trash icon in panel header)
+        const clearSelectionBtn = document.getElementById('clearSelectionBtn');
+        if (clearSelectionBtn) {
+            clearSelectionBtn.addEventListener('click', () => {
+                this.addClickAnimation(clearSelectionBtn);
+                
+                // Clear all selections
+                this.selectedDatasets.clear();
+                this.managers.selectionPanel.listDatasets.clear();
+                this.managers.selectionPanel.markListChanged();
+                
+                // Update UI
+                this.managers.videoGrid.updateCardStyles();
+                this.managers.selectionPanel.updateSelectionPanel();
+            });
+        }
+
 
         // Import/Export
         const importBtn = document.getElementById('importBtn');
