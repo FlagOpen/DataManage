@@ -630,21 +630,11 @@ export class EventHandlers {
      * Bind toolbar button events
      */
     bindToolbarEvents() {
-        // Select/Deselect all
-        const selectAllBtn = document.getElementById('selectAllBtn');
-        const deselectAllBtn = document.getElementById('deselectAllBtn');
-
-        if (selectAllBtn) {
-            selectAllBtn.addEventListener('click', () => {
-                this.addClickAnimation(selectAllBtn);
-                this.selectAllFiltered();
-            });
-        }
-
-        if (deselectAllBtn) {
-            deselectAllBtn.addEventListener('click', () => {
-                this.addClickAnimation(deselectAllBtn);
-                this.deselectAllFiltered();
+        const toggleSelectionBtn = document.getElementById('toggleSelectionBtn');
+        if (toggleSelectionBtn) {
+            toggleSelectionBtn.addEventListener('click', () => {
+                this.addClickAnimation(toggleSelectionBtn);
+                this.toggleFilteredSelection();
             });
         }
 
@@ -783,32 +773,26 @@ export class EventHandlers {
     }
 
     /**
-     * Select all filtered datasets
+     * Toggle selection for all filtered datasets (select if any unselected, deselect if all selected)
      */
-    selectAllFiltered() {
+    toggleFilteredSelection() {
         const filteredDatasets = this.managers.filter.applyFilters(
             document.getElementById('searchBox')?.value || ''
         );
-        filteredDatasets.forEach(ds => {
-            this.selectedDatasets.add(ds.path);
-            this.managers.selectionPanel.listDatasets.add(ds.path);
-        });
-        this.managers.selectionPanel.markListChanged();
-        this.managers.videoGrid.updateCardStyles();
-        this.managers.selectionPanel.updateSelectionPanel();
-    }
+        if (filteredDatasets.length === 0) return;
 
-    /**
-     * Deselect all filtered datasets
-     */
-    deselectAllFiltered() {
-        const filteredDatasets = this.managers.filter.applyFilters(
-            document.getElementById('searchBox')?.value || ''
-        );
+        const areAllSelected = filteredDatasets.every(ds => this.selectedDatasets.has(ds.path));
+
         filteredDatasets.forEach(ds => {
-            this.selectedDatasets.delete(ds.path);
-            this.managers.selectionPanel.listDatasets.delete(ds.path);
+            if (areAllSelected) {
+                this.selectedDatasets.delete(ds.path);
+                this.managers.selectionPanel.listDatasets.delete(ds.path);
+            } else {
+                this.selectedDatasets.add(ds.path);
+                this.managers.selectionPanel.listDatasets.add(ds.path);
+            }
         });
+
         this.managers.selectionPanel.markListChanged();
         this.managers.videoGrid.updateCardStyles();
         this.managers.selectionPanel.updateSelectionPanel();

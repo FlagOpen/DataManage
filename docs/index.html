@@ -61,7 +61,9 @@
         <div class="filter-control-container">
             <div class="toolbar-left-controls">
             <button class="filter-trigger-btn" id="filterTriggerBtn">
-                <span class="filter-trigger-text">Filter datasets</span>
+                <span class="filter-trigger-text">
+                    Filter datasets
+                </span>
                 <span class="filter-trigger-count" id="filterTriggerCount"></span>
             </button>
             </div>
@@ -77,8 +79,9 @@
             </div>
 
             <div class="top-selection-container">
-                <button class="btn-toolbar primary" id="selectAllBtn">Select displayed datasets</button>
-                <button class="btn-toolbar danger" id="deselectAllBtn">Deselect displayed datasets</button>
+                <button class="btn-toolbar primary" id="toggleSelectionBtn" title="Toggle selection for displayed datasets">
+                    Toggle filtered
+                </button>
             </div>
 
             <div class="filter-stats-inline">
@@ -101,10 +104,9 @@
                 <div class="filter-dropdown-header-main">
                     <h3 class="filter-dropdown-title">Filter Datasets</h3>
                     <button class="filter-reset-icon" id="filterResetBtn" title="Reset filters" aria-label="Reset filters">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M2 12a9.9 9.9 0 0 0 10 10c5.52 0 10-4.48 10-10S17.52 2 12 2" />
-                            <polyline points="12 6 12 12 16 14" />
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                         </svg>
                     </button>
                 </div>

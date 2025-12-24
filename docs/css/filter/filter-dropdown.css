@@ -84,13 +84,16 @@
 }
 
 .filter-reset-icon:hover {
-    border-color: var(--color-primary);
-    color: var(--color-primary);
+    border-color: var(--color-danger);
+    color: var(--color-danger);
     transform: translateY(-1px);
     box-shadow: var(--shadow-sm);
 }
 
 .filter-reset-icon:active {
+    background: var(--color-danger);
+    color: white;
+    border-color: #991b1b;
     transform: translateY(0);
     box-shadow: none;
 }

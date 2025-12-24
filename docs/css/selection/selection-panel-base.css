@@ -33,7 +33,7 @@
     position: absolute;
     right: 1rem;
     background: none;
-    border: none;
+    border: 1px solid transparent;
     color: var(--color-text-secondary);
     cursor: pointer;
     padding: 0.4rem;
@@ -45,10 +45,19 @@
 }
 
 .btn-clear-selection:hover {
+    background: none;
+    border-color: var(--color-danger);
+    color: var(--color-danger);
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-1px);
+}
+
+.btn-clear-selection:active {
     background: var(--color-danger);
     color: white;
-    box-shadow: var(--shadow-sm);
-    transform: scale(1.05);
+    border-color: #991b1b;
+    transform: translateY(0);
+    box-shadow: none;
 }
 
 .selection-title {
