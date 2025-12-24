@@ -144,7 +144,7 @@ export class EventHandlers {
         this.bindFilterFinderEvents();
 
         // Reset filters button
-        const resetFiltersBtn = document.getElementById('resetFiltersBtn');
+        const resetFiltersBtn = document.getElementById('filterResetBtn');
         if (resetFiltersBtn) {
             resetFiltersBtn.addEventListener('click', () => {
                 this.addClickAnimation(resetFiltersBtn);

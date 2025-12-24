@@ -94,15 +94,6 @@
     display: none;
 }
 
-/* Reset Button - unified styling with Filter button */
-#resetFiltersBtn {
-    background: white;
-    border-color: var(--color-primary-light);
-    color: var(--color-primary);
-    font-weight: 600;
-    height: var(--button-height);
-}
-
 /* Toolbar Buttons (Select/Deselect/Add/Remove) */
 .btn-toolbar {
     font-weight: 600;

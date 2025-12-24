@@ -64,8 +64,6 @@
                 <span class="filter-trigger-text">Filter datasets</span>
                 <span class="filter-trigger-count" id="filterTriggerCount"></span>
             </button>
-
-                <button class="filter-trigger-btn" id="resetFiltersBtn">Reset filters</button>
             </div>
 
             <div class="filter-search-container">
@@ -100,7 +98,16 @@
     <div class="filter-dropdown-overlay" id="filterDropdownOverlay">
         <div class="filter-dropdown" id="filterDropdown">
             <div class="filter-dropdown-header">
-                <h3 class="filter-dropdown-title">Filter Datasets</h3>
+                <div class="filter-dropdown-header-main">
+                    <h3 class="filter-dropdown-title">Filter Datasets</h3>
+                    <button class="filter-reset-icon" id="filterResetBtn" title="Reset filters" aria-label="Reset filters">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 12a9.9 9.9 0 0 0 10 10c5.52 0 10-4.48 10-10S17.52 2 12 2" />
+                            <polyline points="12 6 12 12 16 14" />
+                        </svg>
+                    </button>
+                </div>
                 <div class="filter-finder">
                     <input type="text" id="filterFinderInput" class="filter-finder-input"
                         placeholder="Search filter options... (Ctrl+F)" autocomplete="off" spellcheck="false">

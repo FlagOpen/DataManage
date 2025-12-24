@@ -62,6 +62,44 @@
     border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
 }
 
+.filter-dropdown-header-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.filter-reset-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 9999px;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-surface);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--color-text-muted);
+}
+
+.filter-reset-icon:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.filter-reset-icon:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+.filter-reset-icon svg {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
 .filter-dropdown-title {
     margin: 0;
     font-size: 1.5rem;
