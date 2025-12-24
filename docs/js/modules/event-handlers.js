@@ -368,13 +368,14 @@ export class EventHandlers {
         grid.addEventListener('click', (e) => {
             try {
                 const clickTarget = this._resolveEventTargetElement(e.target);
-                // Clickable title inside hover overlay
-                const hoverTitle = clickTarget?.closest('.video-hover-title');
-                if (hoverTitle && this.managers && this.managers.ui) {
+
+                // Dataset title click -> show detail modal
+                const datasetTitle = clickTarget?.closest('.video-title, .video-hover-title');
+                if (datasetTitle && this.managers && this.managers.ui) {
                     e.stopPropagation();
-                    const detailPath = hoverTitle.dataset.path;
-                    if (detailPath) {
-                        this.managers.ui.showDetailModal(detailPath, this.datasetMap);
+                    const cardPath = datasetTitle.dataset.path || datasetTitle.closest('.video-card')?.dataset?.path;
+                    if (cardPath) {
+                        this.managers.ui.showDetailModal(cardPath, this.datasetMap);
                     }
                     return;
                 }
@@ -488,6 +489,15 @@ export class EventHandlers {
 
             const path = item.dataset.path;
             if (!path) return;
+
+            // Dataset name click -> show detail modal
+            if (clickTarget?.closest('.selection-item-name')) {
+                e.stopPropagation();
+                if (this.managers && this.managers.ui) {
+                    this.managers.ui.showDetailModal(path, this.datasetMap);
+                }
+                return;
+            }
 
             // Remove button
             if (clickTarget?.closest('.btn-remove')) {
@@ -802,6 +812,17 @@ export class EventHandlers {
         this.managers.selectionPanel.markListChanged();
         this.managers.videoGrid.updateCardStyles();
         this.managers.selectionPanel.updateSelectionPanel();
+    }
+
+    /**
+     * Open Hugging Face page for a dataset
+     * @param {string} datasetName - Dataset name in hub
+     */
+    openHuggingFacePage(datasetName) {
+        if (!datasetName) return;
+        const encodedName = encodeURIComponent(datasetName);
+        const url = `https://huggingface.co/datasets/RoboCOIN/${encodedName}`;
+        window.open(url, '_blank');
     }
 }
 

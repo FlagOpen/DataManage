@@ -98,11 +98,11 @@ export class UIUtils {
         }
         
         overlay.innerHTML = Templates.buildDetailModal(dataset);
-        
+
         overlay.querySelector('.detail-modal-close').addEventListener('click', () => {
             this.hideDetailModal();
         });
-        
+
         requestAnimationFrame(() => {
             overlay.classList.add('visible');
         });
@@ -252,9 +252,20 @@ export class UIUtils {
     updateCounts(filteredCount, selectedCount) {
         const filteredEl = document.getElementById('filteredCount');
         const selectedEl = document.getElementById('selectedCount');
-        
+
         if (filteredEl) filteredEl.textContent = filteredCount;
         if (selectedEl) selectedEl.textContent = selectedCount;
+    }
+
+    /**
+     * Open Hugging Face page for a dataset
+     * @param {string} datasetName - Dataset name in hub
+     */
+    openHuggingFacePage(datasetName) {
+        if (!datasetName) return;
+        const encodedName = encodeURIComponent(datasetName);
+        const url = `https://huggingface.co/datasets/RoboCOIN/${encodedName}`;
+        window.open(url, '_blank');
     }
 }
 

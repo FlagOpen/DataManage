@@ -296,6 +296,12 @@
         max-height: 100vh;
     }
 
+    .btn-clear-selection {
+        right: 0.5rem;
+        padding: 0.3rem;
+        transform: scale(0.9);
+    }
+
     .detail-modal {
         max-height: 95vh;
     }

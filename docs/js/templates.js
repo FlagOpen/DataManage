@@ -187,13 +187,13 @@ const Templates = {
                 </button>
             </div>
             <div class="video-info">
-                <div class="video-title">${displayName}</div>
+                <div class="video-title" data-path="${ds.path}" style="cursor: pointer;">${displayName}</div>
                 <div class="video-tags">${formatMetaTags(ds)}</div>
             </div>
             <div class="video-hover-overlay">
                 <div class="video-hover-content">
                     <div class="hover-click-hint">(Click title to see more)</div>
-                    <div class="video-hover-title" data-path="${ds.path}">${displayName}</div>
+                    <div class="video-hover-title" data-path="${ds.path}" style="cursor: pointer;">${displayName}</div>
                     ${hoverOriginalLabel}
                     <div class="video-hover-details">${this.buildHoverDetailsHTML(ds)}</div>
                 </div>
@@ -314,7 +314,9 @@ const Templates = {
      */
     buildDatasetOriginalLabel(originalName) {
         if (!originalName) return '';
-        return `<div class="dataset-original-name">Dataset Name In Hub: ${escapeHtml(originalName)}</div>`;
+        const encodedName = encodeURIComponent(originalName);
+        const url = `https://huggingface.co/datasets/RoboCOIN/${encodedName}`;
+        return `<div class="dataset-original-name">Dataset Name In Hub: <a class="dataset-original-link" href="${url}" target="_blank" rel="noopener noreferrer">${escapeHtml(originalName)}</a></div>`;
     },
 
     buildHoverInfoGroup(label, content, useTags = true) {
@@ -347,7 +349,7 @@ const Templates = {
     buildSelectionItem(ds) {
         const displayName = this.getDatasetDisplayName(ds);
         return `
-            <div class="selection-item-name">${displayName}</div>
+            <div class="selection-item-name" style="cursor: pointer;">${displayName}</div>
             <button class="btn-detail" data-path="${ds.path}" title="View details">...</button>
             <button class="btn-remove" data-path="${ds.path}">×</button>
         `;
@@ -390,7 +392,7 @@ const Templates = {
             <div class="detail-modal">
                 <div class="detail-modal-header">
                     <div class="detail-modal-title-group">
-                        <h3 class="detail-modal-title">${datasetDisplayName}</h3>
+                        <h3 class="detail-modal-title" style="cursor: pointer;">${datasetDisplayName}</h3>
                         ${originalNameLabel}
                     </div>
                     <button class="detail-modal-close">×</button>

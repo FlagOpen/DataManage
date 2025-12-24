@@ -43,6 +43,11 @@
         max-height: 45%;
     }
 
+    .btn-clear-selection {
+        right: 0.75rem;
+        padding: 0.35rem;
+    }
+
     /* Filter panel - prevent horizontal overflow */
     .filter-header {
         padding: 0.5rem 0.375rem;
