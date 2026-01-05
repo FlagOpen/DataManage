@@ -10,13 +10,15 @@ Live Demo: https://flagopen.github.io/RoboCOIN-DataManager/
 
 RoboCOIN DataManager is a web app that helps you find and download robotic manipulation datasets from the RoboCOIN project. Instead of digging through complex commands, you can browse videos, filter by tags, pick what you need, and get ready-to-use download commands.
 
-## 📋 Important Notice: User Survey
+## 📋 Important Notice: Download Access
 
-> **To improve user experience, understand user distribution, provide reference for future project development directions, and facilitate better compatibility for users in different regions in the future, we hope you can fill out a relevant information statistics survey before using the RoboCOIN dataset. This statistical information will be collected through official channels of Huggingface or Modelscope, and will not be used for any other purposes except the above. Thank you for your support of the RoboCOIN project!**
+> **To improve user experience, understand user distribution, provide reference for future project development directions, and facilitate better compatibility for users in different regions in the future, we hope you can fill out a relevant information statistics survey before using the RoboCOIN dataset. This statistical information will be collected through official channels of Hugging Face or ModelScope, and will not be used for any other purposes except the above. Thank you for your support of the RoboCOIN project!**
 >
-> 🔗 **Survey Link**: [https://huggingface.co/datasets/RoboCOIN/gate](https://huggingface.co/datasets/RoboCOIN/gate)
+> **To download any dataset, you must first apply for access on Hugging Face. Once your application is approved for any single dataset, you will automatically gain download permissions for all datasets in the RoboCOIN project.**
 >
-> Click the link, request the **Gated user access** at the top, and submit the short form.
+> 🔗 **Application Link**: [https://huggingface.co/RoboCOIN](https://huggingface.co/RoboCOIN)
+>
+> Click the link and select any dataset. You will need to fill in some necessary information on the dataset page before submitting your access request. Your application will be auto-approved immediately after submission. 
 
 ## How to download in one step?
 
