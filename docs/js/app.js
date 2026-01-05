@@ -94,7 +94,9 @@ class Application {
             console.log('✓ Application initialized successfully');
             
         } catch (err) {
-            ErrorNotifier.error('Failed to initialize application: ' + err.message, err);
+            const userFriendlyMsg = 'Since the web resources are hosted on Hugging Face, your network connection may affect the loading of these resources. Please ensure you have a stable connection and refresh the page to try again.\n\n' +
+                                  'Application initialization failed: ' + err.message;
+            ErrorNotifier.error(userFriendlyMsg, err);
             
             setTimeout(() => {
                 document.getElementById('loadingOverlay').classList.add('hidden');
