@@ -406,6 +406,16 @@ export class EventHandlers {
                 const path = card.dataset.path;
                 if (!path) return;
 
+                // 如果悬停在下载按钮上，清空进入悬浮展示层的计时
+                const downloadButton = hoverTarget?.closest('.download-button');
+                if (downloadButton) {
+                    if (this._hoverOverlayShowTimeout) {
+                        clearTimeout(this._hoverOverlayShowTimeout);
+                        this._hoverOverlayShowTimeout = null;
+                    }
+                    return;
+                }
+
                 // Cancel any pending hide while moving between cards
                 if (this._hoverOverlayHideTimeout) {
                     clearTimeout(this._hoverOverlayHideTimeout);
