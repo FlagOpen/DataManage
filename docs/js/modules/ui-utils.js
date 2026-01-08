@@ -245,23 +245,52 @@ export class UIUtils {
     }
     
     /**
-     * Calculate and format total file size for datasets
+     * Calculate and format total file size and episodes for datasets
      * @param {Dataset[]} datasets - Array of datasets
-     * @returns {string} Formatted size string (e.g., " repos, 1.5GB")
+     * @returns {string} Formatted HTML string (e.g., " repos, <strong style='color: var(--color-primary-light)'>1234 eps</strong>, <strong style='color: var(--color-primary-light)'>1.5GB</strong>")
      */
     calculateTotalSize(datasets) {
         if (!datasets || datasets.length === 0) {
             return ' repos';
         }
         
+        // Calculate total episodes
+        let totalEpisodes = 0;
+        datasets.forEach(ds => {
+            if (ds && ds.statistics && typeof ds.statistics.total_episodes === 'number') {
+                totalEpisodes += ds.statistics.total_episodes;
+            }
+        });
+        
         const totalBytes = ConfigManager.calculateTotalSizeFromDatasets(datasets);
         
         if (totalBytes === null) {
+            // If no size info, still show episodes if available
+            if (totalEpisodes > 0) {
+                const epsNum = `<strong style="color: var(--color-primary-light); font-weight: 600;">${totalEpisodes.toLocaleString()}</strong>`;
+                return ` repos, ${epsNum} eps`;
+            }
             return ' repos';
         }
         
         const formattedSize = ConfigManager.formatFileSize(totalBytes);
-        return ` repos, ${formattedSize}`;
+        // Extract number and unit from formatted size (e.g., "3.7TB" -> "3.7" and "TB")
+        const sizeMatch = formattedSize.match(/^([\d.]+)([A-Z]+)$/);
+        let sizeHtml;
+        if (sizeMatch) {
+            const sizeNum = `<strong style="color: var(--color-primary-light); font-weight: 600;">${sizeMatch[1]}</strong>`;
+            sizeHtml = `${sizeNum}${sizeMatch[2]}`;
+        } else {
+            // Fallback if format doesn't match expected pattern
+            sizeHtml = formattedSize;
+        }
+        
+        // Format: " repos, <num> eps, <file size>"
+        if (totalEpisodes > 0) {
+            const epsNum = `<strong style="color: var(--color-primary-light); font-weight: 600;">${totalEpisodes.toLocaleString()}</strong>`;
+            return ` repos, ${epsNum} eps, ${sizeHtml}`;
+        }
+        return ` repos, ${sizeHtml}`;
     }
 
     /**
@@ -280,14 +309,14 @@ export class UIUtils {
         if (filteredEl) filteredEl.textContent = filteredCount;
         if (selectedEl) selectedEl.textContent = selectedCount;
         
-        // Calculate and display total file size for filtered datasets
+        // Calculate and display total file size and episodes for filtered datasets
         if (filteredInfoEl) {
-            filteredInfoEl.textContent = this.calculateTotalSize(filteredDatasets);
+            filteredInfoEl.innerHTML = this.calculateTotalSize(filteredDatasets);
         }
         
-        // Calculate and display total file size for selected datasets
+        // Calculate and display total file size and episodes for selected datasets
         if (selectedInfoEl) {
-            selectedInfoEl.textContent = this.calculateTotalSize(selectedDatasets);
+            selectedInfoEl.innerHTML = this.calculateTotalSize(selectedDatasets);
         }
     }
 

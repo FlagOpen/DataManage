@@ -223,7 +223,8 @@
 /* Stats */
 .filter-stats-inline {
     display: flex;
-    gap: 1.5rem;
+    flex-direction: column;
+    gap: 0.25rem;
     font-size: 0.875rem;
     color: var(--color-text-secondary);
     margin-left: 1rem;

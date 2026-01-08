@@ -58,8 +58,8 @@ export class SelectionPanelManager {
     }
     
     /**
-     * Calculate and format total file size for selected datasets
-     * @returns {string} Formatted size string (e.g., " repos, 1.5GB")
+     * Calculate and format total file size and episodes for selected datasets
+     * @returns {string} Formatted HTML string (e.g., " repos, <strong style='color: var(--color-primary-light)'>1234 eps</strong>, <strong style='color: var(--color-primary-light)'>1.5GB</strong>")
      */
     _calculateSelectedTotalSize() {
         if (this.selectedDatasets.size === 0) {
@@ -71,14 +71,43 @@ export class SelectionPanelManager {
             .map(path => this.datasetMap.get(path))
             .filter(ds => ds !== undefined);
         
+        // Calculate total episodes
+        let totalEpisodes = 0;
+        datasets.forEach(ds => {
+            if (ds && ds.statistics && typeof ds.statistics.total_episodes === 'number') {
+                totalEpisodes += ds.statistics.total_episodes;
+            }
+        });
+        
         const totalBytes = ConfigManager.calculateTotalSizeFromDatasets(datasets);
         
         if (totalBytes === null) {
+            // If no size info, still show episodes if available
+            if (totalEpisodes > 0) {
+                const epsNum = `<strong style="color: var(--color-primary-light); font-weight: 600;">${totalEpisodes.toLocaleString()}</strong>`;
+                return ` repos, ${epsNum} eps`;
+            }
             return ' repos';
         }
         
         const formattedSize = ConfigManager.formatFileSize(totalBytes);
-        return ` repos, ${formattedSize}`;
+        // Extract number and unit from formatted size (e.g., "3.7TB" -> "3.7" and "TB")
+        const sizeMatch = formattedSize.match(/^([\d.]+)([A-Z]+)$/);
+        let sizeHtml;
+        if (sizeMatch) {
+            const sizeNum = `<strong style="color: var(--color-primary-light); font-weight: 600;">${sizeMatch[1]}</strong>`;
+            sizeHtml = `${sizeNum}${sizeMatch[2]}`;
+        } else {
+            // Fallback if format doesn't match expected pattern
+            sizeHtml = formattedSize;
+        }
+        
+        // Format: " repos, <num> eps, <file size>"
+        if (totalEpisodes > 0) {
+            const epsNum = `<strong style="color: var(--color-primary-light); font-weight: 600;">${totalEpisodes.toLocaleString()}</strong>`;
+            return ` repos, ${epsNum} eps, ${sizeHtml}`;
+        }
+        return ` repos, ${sizeHtml}`;
     }
 
     /**
@@ -93,7 +122,7 @@ export class SelectionPanelManager {
         }
         
         if (selectedInfoEl) {
-            selectedInfoEl.textContent = this._calculateSelectedTotalSize();
+            selectedInfoEl.innerHTML = this._calculateSelectedTotalSize();
         }
         
         const list = document.getElementById('selectionList');
