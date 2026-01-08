@@ -245,16 +245,50 @@ export class UIUtils {
     }
     
     /**
+     * Calculate and format total file size for datasets
+     * @param {Dataset[]} datasets - Array of datasets
+     * @returns {string} Formatted size string (e.g., " repos, 1.5GB")
+     */
+    calculateTotalSize(datasets) {
+        if (!datasets || datasets.length === 0) {
+            return ' repos';
+        }
+        
+        const totalBytes = ConfigManager.calculateTotalSizeFromDatasets(datasets);
+        
+        if (totalBytes === null) {
+            return ' repos';
+        }
+        
+        const formattedSize = ConfigManager.formatFileSize(totalBytes);
+        return ` repos, ${formattedSize}`;
+    }
+
+    /**
      * Update counts display
      * @param {number} filteredCount - Filtered datasets count
      * @param {number} selectedCount - Selected datasets count
+     * @param {Dataset[]} [filteredDatasets] - Optional filtered datasets array for size calculation
+     * @param {Dataset[]} [selectedDatasets] - Optional selected datasets array for size calculation
      */
-    updateCounts(filteredCount, selectedCount) {
+    updateCounts(filteredCount, selectedCount, filteredDatasets = null, selectedDatasets = null) {
         const filteredEl = document.getElementById('filteredCount');
         const selectedEl = document.getElementById('selectedCount');
+        const filteredInfoEl = document.getElementById('filteredInfo');
+        const selectedInfoEl = document.getElementById('selectedInfo');
 
         if (filteredEl) filteredEl.textContent = filteredCount;
         if (selectedEl) selectedEl.textContent = selectedCount;
+        
+        // Calculate and display total file size for filtered datasets
+        if (filteredInfoEl) {
+            filteredInfoEl.textContent = this.calculateTotalSize(filteredDatasets);
+        }
+        
+        // Calculate and display total file size for selected datasets
+        if (selectedInfoEl) {
+            selectedInfoEl.textContent = this.calculateTotalSize(selectedDatasets);
+        }
     }
 
     /**

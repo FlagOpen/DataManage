@@ -317,6 +317,46 @@ class ConfigManager {
     }
 
     /**
+     * Format file size from bytes to human-readable string (GB or TB)
+     * @param {number} totalBytes - Total size in bytes
+     * @returns {string} Formatted size string (e.g., "1.5GB" or "0.3TB")
+     */
+    static formatFileSize(totalBytes) {
+        const TB = 1e12;
+        const GB = 1e9;
+        const useTB = totalBytes >= TB;
+        const value = useTB ? (totalBytes / TB) : (totalBytes / GB);
+        const formatted = (Math.round(value * 10) / 10).toFixed(1);
+        const unit = useTB ? 'TB' : 'GB';
+        return `${formatted}${unit}`;
+    }
+
+    /**
+     * Calculate total size in bytes from an array of datasets
+     * @param {Dataset[]} datasets - Array of datasets
+     * @returns {number|null} Total size in bytes, or null if no valid sizes found
+     */
+    static calculateTotalSizeFromDatasets(datasets) {
+        if (!datasets || datasets.length === 0) {
+            return null;
+        }
+        
+        let totalBytes = 0;
+        let hasValidSize = false;
+        
+        for (const ds of datasets) {
+            const size = ds?.datasetSize ?? ds?.raw?.dataset_size;
+            const bytes = this.parseDatasetSizeToBytes(size);
+            if (bytes !== null) {
+                totalBytes += bytes;
+                hasValidSize = true;
+            }
+        }
+        
+        return hasValidSize ? totalBytes : null;
+    }
+
+    /**
      * Build the required storage comment for a list of datasets.
      * Rules:
      * - Use TB if total >= 1TB, otherwise GB
@@ -335,24 +375,16 @@ class ConfigManager {
             return '# Required storage:  ---GB/TB.\n# Disk usage may be larger.';
         }
 
-        let totalBytes = 0;
-        for (const path of datasetPaths) {
-            const ds = datasetMap.get(path);
-            const size = ds?.datasetSize ?? ds?.raw?.dataset_size;
-            const bytes = this.parseDatasetSizeToBytes(size);
-            if (bytes === null) {
-                return '# Required storage:  ---GB/TB.\n# Disk usage may be larger.';
-            }
-            totalBytes += bytes;
+        // Build datasets array from paths
+        const datasets = datasetPaths.map(path => datasetMap.get(path)).filter(ds => ds !== undefined);
+        const totalBytes = this.calculateTotalSizeFromDatasets(datasets);
+        
+        if (totalBytes === null) {
+            return '# Required storage:  ---GB/TB.\n# Disk usage may be larger.';
         }
-
-        const TB = 1e12;
-        const GB = 1e9;
-        const useTB = totalBytes >= TB;
-        const value = useTB ? (totalBytes / TB) : (totalBytes / GB);
-        const formatted = (Math.round(value * 10) / 10).toFixed(1);
-        const unit = useTB ? 'TB' : 'GB';
-        return `# Required storage:  ${formatted}${unit}.\n# Disk usage may be larger.`;
+        
+        const formattedSize = this.formatFileSize(totalBytes);
+        return `# Required storage:  ${formattedSize}.\n# Disk usage may be larger.`;
     }
 
     /**

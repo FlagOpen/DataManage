@@ -153,8 +153,18 @@ class Application {
         const searchQuery = document.getElementById('searchBox')?.value || '';
         const filteredDatasets = this.filterManager.applyFilters(searchQuery);
         
+        // Get selected datasets array from selectedDatasets Set
+        const selectedDatasetsArray = Array.from(this.selectedDatasets)
+            .map(path => dataManager.datasetMap.get(path))
+            .filter(ds => ds !== undefined);
+        
         // Update counts
-        this.uiUtils.updateCounts(filteredDatasets.length, this.selectedDatasets.size);
+        this.uiUtils.updateCounts(
+            filteredDatasets.length, 
+            this.selectedDatasets.size, 
+            filteredDatasets,
+            selectedDatasetsArray
+        );
         
         // Update filter counts in UI
         this.updateFilterCounts(filteredDatasets);

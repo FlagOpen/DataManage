@@ -58,10 +58,43 @@ export class SelectionPanelManager {
     }
     
     /**
+     * Calculate and format total file size for selected datasets
+     * @returns {string} Formatted size string (e.g., " repos, 1.5GB")
+     */
+    _calculateSelectedTotalSize() {
+        if (this.selectedDatasets.size === 0) {
+            return ' repos';
+        }
+        
+        // Build datasets array from selected paths
+        const datasets = Array.from(this.selectedDatasets)
+            .map(path => this.datasetMap.get(path))
+            .filter(ds => ds !== undefined);
+        
+        const totalBytes = ConfigManager.calculateTotalSizeFromDatasets(datasets);
+        
+        if (totalBytes === null) {
+            return ' repos';
+        }
+        
+        const formattedSize = ConfigManager.formatFileSize(totalBytes);
+        return ` repos, ${formattedSize}`;
+    }
+
+    /**
      * Update selection panel with virtual scrolling
      */
     updateSelectionPanel() {
-        document.getElementById('selectedCount').textContent = this.selectedDatasets.size;
+        const selectedCountEl = document.getElementById('selectedCount');
+        const selectedInfoEl = document.getElementById('selectedInfo');
+        
+        if (selectedCountEl) {
+            selectedCountEl.textContent = this.selectedDatasets.size;
+        }
+        
+        if (selectedInfoEl) {
+            selectedInfoEl.textContent = this._calculateSelectedTotalSize();
+        }
         
         const list = document.getElementById('selectionList');
         if (!list) return;
