@@ -129,7 +129,7 @@ class ConfigManager {
      * @returns {string}
      */
     static getDefaultRemoteAssetsRoot() {
-        return 'https://huggingface.co/datasets/RogersPyke/RoboCOIN-DataManager-assets/resolve/main';
+        return 'https://huggingface.co/datasets/RogersPyke/RoboCOIN_DataManager_assets/resolve/main';
     }
 
     /**
