@@ -35,6 +35,12 @@ export class DataManager {
      * @returns {Promise<void>}
      */
     async loadExcludedDatasets() {
+        // Check if exclusions are enabled
+        if (this.config.enableExclude === false) {
+            console.log('ℹ️ Dataset exclusions are disabled (enableExclude: false). Skipping exclude.json.');
+            return;
+        }
+
         try {
             const response = await fetch(`${this.config.paths.info}/exclude.json`);
             if (!response.ok) {
@@ -63,6 +69,8 @@ export class DataManager {
      */
     async loadDatasets(loadingProgress, loadingBar) {
         try {
+            // Refresh config to ensure we have the latest values after JSON is loaded
+            this.config = ConfigManager.getConfig();
             await this.loadExcludedDatasets();
 
             console.log('🚀 Attempting to load consolidated JSON (preferred)...');

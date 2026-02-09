@@ -73,8 +73,77 @@
 /**
  * Configuration Manager
  * Reads configuration values from CSS variables and provides type-safe access
+ * Loads base configuration from config.json for easy editing
  */
 class ConfigManager {
+    /**
+     * Cached JSON configuration
+     * @type {Object|null}
+     */
+    static _jsonConfig = null;
+
+    /**
+     * Promise for loading JSON config (prevents multiple loads)
+     * @type {Promise<Object>|null}
+     */
+    static _configLoadPromise = null;
+
+    /**
+     * Load configuration from config.json
+     * @returns {Promise<Object>} Loaded configuration object
+     */
+    static async loadJsonConfig() {
+        if (this._jsonConfig !== null) {
+            return this._jsonConfig;
+        }
+
+        if (this._configLoadPromise) {
+            return this._configLoadPromise;
+        }
+
+        this._configLoadPromise = (async () => {
+            try {
+                const response = await fetch('./js/config/config.json');
+                if (!response.ok) {
+                    console.warn('[ConfigManager] Failed to load js/config/config.json, using hardcoded defaults');
+                    this._jsonConfig = {};
+                    return this._jsonConfig;
+                }
+                this._jsonConfig = await response.json();
+                return this._jsonConfig;
+            } catch (error) {
+                console.warn('[ConfigManager] Error loading js/config/config.json:', error);
+                this._jsonConfig = {};
+                return this._jsonConfig;
+            }
+        })();
+
+        return this._configLoadPromise;
+    }
+
+    /**
+     * Get a value from JSON config with fallback
+     * @param {string} path - Dot-separated path (e.g., 'assets.defaultRemoteAssetsRoot')
+     * @param {*} fallback - Fallback value if not found
+     * @returns {*} Config value or fallback
+     */
+    static getJsonValue(path, fallback = null) {
+        if (!this._jsonConfig) {
+            return fallback;
+        }
+
+        const keys = path.split('.');
+        let value = this._jsonConfig;
+        for (const key of keys) {
+            if (value && typeof value === 'object' && key in value) {
+                value = value[key];
+            } else {
+                return fallback;
+            }
+        }
+        return value !== undefined ? value : fallback;
+    }
+
     /**
      * Get a CSS variable value with fallback
      * @param {string} propertyName - CSS variable name (with or without --)
@@ -126,9 +195,15 @@ class ConfigManager {
 
     /**
      * Default Hugging Face dataset location for assets.
+     * Loads from config.json if available, otherwise uses hardcoded default.
      * @returns {string}
      */
     static getDefaultRemoteAssetsRoot() {
+        const jsonValue = this.getJsonValue('assets.defaultRemoteAssetsRoot');
+        if (jsonValue) {
+            return jsonValue;
+        }
+        // Fallback to hardcoded value if JSON not loaded or value missing
         return 'https://huggingface.co/datasets/RogersPyke/RoboCOIN_DataManager_assets/resolve/main';
     }
 
@@ -170,6 +245,7 @@ class ConfigManager {
 
     /**
      * Get complete application configuration
+     * Loads defaults from config.json, then applies CSS variable overrides
      * @returns {AppConfig} Complete configuration object
      */
     static getConfig() {
@@ -178,51 +254,74 @@ class ConfigManager {
         const datasetInfoPath = `${assetsRoot}/dataset_info`;
         const videosPath = `${assetsRoot}/videos`;
 
+        // Helper to get value: CSS variable > JSON config > hardcoded fallback
+        const getValue = (cssVar, jsonPath, fallback) => {
+            const cssValue = this.getCSSValue(cssVar, null);
+            if (cssValue !== null) return cssValue;
+            const jsonValue = this.getJsonValue(jsonPath);
+            return jsonValue !== null ? jsonValue : fallback;
+        };
+
+        // Get download command config from JSON with fallbacks
+        const downloadCmdJson = this._jsonConfig?.downloadCommand || {};
+        const downloadCommand = {
+            command: downloadCmdJson.command || 'robocoin-download',
+            hubParam: downloadCmdJson.hubParam || '--hub',
+            datasetsParam: downloadCmdJson.datasetsParam || '--ds_lists',
+            targetDirParam: downloadCmdJson.targetDirParam || '--target-dir',
+            lineContinuation: downloadCmdJson.lineContinuation || ' \\',
+            lineBreak: downloadCmdJson.lineBreak || '\n',
+            datasetSeparator: downloadCmdJson.datasetSeparator || ' \\\n',
+            defaultPathComment: downloadCmdJson.defaultPathComment || '# the default download path is ~/.cache/huggingface/lerobot/, if you want to speicifiy download dir, please add',
+            targetDirComment: downloadCmdJson.targetDirComment || '# --target-dir YOUR_DOWNLOAD_DIR'
+        };
+
         return {
+            enableExclude: this.getJsonValue('defaults.enableExclude', true),
             layout: {
-                contentPadding: this.getCSSValue('--content-padding', 12)
+                contentPadding: getValue('--content-padding', 'defaults.layout.contentPadding', 12)
             },
             grid: {
-                minCardWidth: this.getCSSValue('--grid-min-card-width', 180),
-                cardHeight: this.getCSSValue('--grid-card-height', 300),
-                gap: this.getCSSValue('--grid-gap', 16),
-                columns: this.getCSSValue('--grid-columns', 4),
-                bufferRows: this.getCSSValue('--grid-buffer-rows', 2),
-                padding: this.getCSSValue('--grid-padding', 12)
+                minCardWidth: getValue('--grid-min-card-width', 'defaults.grid.minCardWidth', 180),
+                cardHeight: getValue('--grid-card-height', 'defaults.grid.cardHeight', 300),
+                gap: getValue('--grid-gap', 'defaults.grid.gap', 16),
+                columns: getValue('--grid-columns', 'defaults.grid.columns', 4),
+                bufferRows: getValue('--grid-buffer-rows', 'defaults.grid.bufferRows', 2),
+                padding: getValue('--grid-padding', 'defaults.grid.padding', 12)
             },
             selection: {
-                itemHeight: this.getCSSValue('--selection-item-height', 45),
-                padding: this.getCSSValue('--selection-item-padding', 16),
-                bufferItems: this.getCSSValue('--selection-buffer-items', 20)
+                itemHeight: getValue('--selection-item-height', 'defaults.selection.itemHeight', 45),
+                padding: getValue('--selection-item-padding', 'defaults.selection.padding', 16),
+                bufferItems: getValue('--selection-buffer-items', 'defaults.selection.bufferItems', 20)
             },
             observer: {
-                margin: this.getCSSValue('--video-observer-margin', 200),
-                threshold: this.getCSSValue('--video-observer-threshold', 0.1)
+                margin: getValue('--video-observer-margin', 'defaults.observer.margin', 200),
+                threshold: getValue('--video-observer-threshold', 'defaults.observer.threshold', 0.1)
             },
             badge: {
-                size: this.getCSSValue('--badge-size', 24),
-                margin: this.getCSSValue('--badge-margin', 8)
+                size: getValue('--badge-size', 'defaults.badge.size', 24),
+                margin: getValue('--badge-margin', 'defaults.badge.margin', 8)
             },
             timing: {
-                hoverDelay: this.getCSSValue('--hover-delay', 800),
-                resizeDebounce: this.getCSSValue('--resize-debounce', 200),
-                scrollThrottle: this.getCSSValue('--scroll-throttle', 16),
-                transitionDuration: this.getCSSValue('--transition-duration', 200),
-                fadeDuration: this.getCSSValue('--fade-duration', 300)
+                hoverDelay: getValue('--hover-delay', 'defaults.timing.hoverDelay', 800),
+                resizeDebounce: getValue('--resize-debounce', 'defaults.timing.resizeDebounce', 200),
+                scrollThrottle: getValue('--scroll-throttle', 'defaults.timing.scrollThrottle', 16),
+                transitionDuration: getValue('--transition-duration', 'defaults.timing.transitionDuration', 200),
+                fadeDuration: getValue('--fade-duration', 'defaults.timing.fadeDuration', 300)
             },
             preview: {
-                maxWidth: this.getCSSValue('--preview-card-max-width', 320),
-                minWidth: this.getCSSValue('--preview-card-min-width', 240),
-                padding: this.getCSSValue('--preview-card-padding', 16),
-                offset: this.getCSSValue('--preview-card-offset', 8)
+                maxWidth: getValue('--preview-card-max-width', 'defaults.preview.maxWidth', 320),
+                minWidth: getValue('--preview-card-min-width', 'defaults.preview.minWidth', 240),
+                padding: getValue('--preview-card-padding', 'defaults.preview.padding', 16),
+                offset: getValue('--preview-card-offset', 'defaults.preview.offset', 8)
             },
             ui: {
-                buttonSize: this.getCSSValue('--button-size', 32),
-                iconSize: this.getCSSValue('--icon-size', 16),
-                borderRadius: this.getCSSValue('--border-radius', 4)
+                buttonSize: getValue('--button-size', 'defaults.ui.buttonSize', 32),
+                iconSize: getValue('--icon-size', 'defaults.ui.iconSize', 16),
+                borderRadius: getValue('--border-radius', 'defaults.ui.borderRadius', 4)
             },
             loading: {
-                batchSize: this.getCSSValue('--loading-batch-size', 150)
+                batchSize: getValue('--loading-batch-size', 'defaults.loading.batchSize', 150)
             },
             // Standard directory structure:
             // ./assets/
@@ -237,19 +336,8 @@ class ConfigManager {
                 videos: videosPath
             },
             // Download command format configuration
-            // Modify these values to change the download command format
-            downloadCommand: {
-                command: 'robocoin-download',
-                hubParam: '--hub',
-                datasetsParam: '--ds_lists',
-                targetDirParam: '--target-dir',
-                lineContinuation: ' \\',
-                lineBreak: '\n',
-                datasetSeparator: ' \\\n',
-                // Comment text for download path instructions
-                defaultPathComment: '# the default download path is ~/.cache/huggingface/lerobot/, if you want to speicifiy download dir, please add',
-                targetDirComment: '# --target-dir YOUR_DOWNLOAD_DIR'
-            }
+            // Loaded from config.json for easy editing
+            downloadCommand
         };
     }
 
@@ -385,6 +473,17 @@ class ConfigManager {
         
         const formattedSize = this.formatFileSize(totalBytes);
         return `# Required storage:  ${formattedSize}.\n# Disk usage may be larger.`;
+    }
+
+    /**
+     * Get app metadata (version, title, etc.) from config.json
+     * @returns {Object} App metadata
+     */
+    static getAppMetadata() {
+        return {
+            version: this.getJsonValue('app.version', 'v1.1'),
+            title: this.getJsonValue('app.title', 'RoboCOIN-DataManager')
+        };
     }
 
     /**

@@ -55,6 +55,9 @@ class Application {
             const loadingOverlay = document.getElementById('loadingOverlay');
             loadingOverlay.classList.remove('hidden');
             
+            // Load JSON configuration first (if available)
+            await ConfigManager.loadJsonConfig();
+            
             // Initialize configuration
             this.config = ConfigManager.getConfig();
             
