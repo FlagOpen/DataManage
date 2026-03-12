@@ -333,10 +333,24 @@ export class FilterManager {
             // Keyword search: match against dataset id/name and robot aliases / friendly names
             if (normalizedQuery) {
                 const texts = this.getSearchableTextsForDataset(ds);
-                const matchesSearch = texts.some(text =>
+                let matchesSearch = texts.some(text =>
                     typeof text === 'string' && text.toLowerCase().includes(normalizedQuery)
                 );
-
+                // Fallback: match by alias reverse lookup (e.g. "宇树" -> robot keys that have this alias)
+                if (!matchesSearch && this.robotAliasManager && typeof this.robotAliasManager.getRobotIdsByAlias === 'function') {
+                    const robotIdsByAlias = this.robotAliasManager.getRobotIdsByAlias(normalizedQuery);
+                    if (robotIdsByAlias.length > 0) {
+                        const dsRobots = Array.isArray(ds.robot) ? ds.robot : (ds.robot != null ? [ds.robot] : []);
+                        const aliasKeysLower = new Set(robotIdsByAlias.map(id => String(id).toLowerCase()));
+                        const getCanonical = typeof this.robotAliasManager.getCanonicalRobotKey === 'function'
+                            ? (r) => this.robotAliasManager.getCanonicalRobotKey(r)
+                            : (r) => (r != null ? String(r) : null);
+                        matchesSearch = dsRobots.some(r => {
+                            const canonical = getCanonical(r);
+                            return canonical != null && aliasKeysLower.has(canonical.toLowerCase());
+                        });
+                    }
+                }
                 if (!matchesSearch) {
                     return false;
                 }
