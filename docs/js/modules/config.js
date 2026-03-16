@@ -433,7 +433,7 @@ class ConfigManager {
         let hasValidSize = false;
         
         for (const ds of datasets) {
-            const size = ds?.datasetSize ?? ds?.raw?.dataset_size;
+            const size = ds?.datasetSize;
             const bytes = this.parseDatasetSizeToBytes(size);
             if (bytes !== null) {
                 totalBytes += bytes;

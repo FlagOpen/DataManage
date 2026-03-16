@@ -230,13 +230,7 @@ const Templates = {
 
         const endEffectors = Array.isArray(ds.endEffectors)
             ? ds.endEffectors
-            : ds.endEffector
-                ? [ds.endEffector]
-                : Array.isArray(ds.raw?.end_effector_type)
-                    ? ds.raw.end_effector_type
-                    : ds.raw?.end_effector_type
-                        ? [ds.raw.end_effector_type]
-                        : [];
+            : ds.endEffector ? [ds.endEffector] : [];
         if (endEffectors.length > 0) {
             html += `<strong>End Effector:</strong> ${endEffectors.join(', ')}<br>`;
         }
@@ -361,17 +355,11 @@ const Templates = {
 
         const datasetDisplayName = this.getDatasetDisplayName(dataset);
         const originalNameLabel = this.buildDatasetOriginalLabel(dataset.name);
-        const sceneTypeSource = Array.isArray(dataset.scenes) && dataset.scenes.length > 0
-            ? dataset.scenes
-            : (Array.isArray(dataset.raw?.scene_type) ? dataset.raw.scene_type : []);
-        const sceneTypeText = sceneTypeSource.length > 0 ? sceneTypeSource.join(', ') : 'N/A';
-
-        const atomicActionsSource = Array.isArray(dataset.actions) && dataset.actions.length > 0
-            ? dataset.actions
-            : (Array.isArray(dataset.raw?.atomic_actions) ? dataset.raw.atomic_actions : []);
-        const atomicActionsText = atomicActionsSource.length > 0 ? atomicActionsSource.join(', ') : 'N/A';
-
-        const totalFramesValue = dataset.statistics?.total_frames ?? dataset.raw?.statistics?.total_frames;
+        const sceneTypeText = Array.isArray(dataset.scenes) && dataset.scenes.length > 0
+            ? dataset.scenes.join(', ') : 'N/A';
+        const atomicActionsText = Array.isArray(dataset.actions) && dataset.actions.length > 0
+            ? dataset.actions.join(', ') : 'N/A';
+        const totalFramesValue = dataset.statistics?.total_frames;
         const totalFramesNumber = typeof totalFramesValue === 'number' ? totalFramesValue : Number(totalFramesValue);
         const hasFrameCount = totalFramesValue !== undefined && totalFramesValue !== null && !Number.isNaN(totalFramesNumber);
         const totalFramesText = hasFrameCount ? `${totalFramesNumber.toLocaleString()} frames` : 'N/A';
@@ -379,11 +367,8 @@ const Templates = {
         let objectsHTML = 'N/A';
         if (Array.isArray(dataset.objects) && dataset.objects.length > 0) {
             objectsHTML = dataset.objects.map(obj => {
-                const level1 = obj.level1 || obj.hierarchy?.[0] || '';
-                const level2 = obj.level2 || obj.hierarchy?.[1] || '';
-                const level3 = obj.level3 || obj.hierarchy?.[2] || '';
-                const hierarchyText = [level1, level2, level3].filter(l => l).join(' > ');
-                return `<div style="margin-bottom: 4px;">• ${obj.object_name || obj.name} (${hierarchyText})</div>`;
+                const hierarchyText = (obj.hierarchy || []).filter(Boolean).slice(0, 3).join(' > ');
+                return `<div style="margin-bottom: 4px;">• ${obj.name || ''} (${hierarchyText})</div>`;
             }).join('');
         }
 
@@ -417,21 +402,21 @@ const Templates = {
 
     buildDetailInfoGrid(dataset, sceneTypeText, atomicActionsText, objectsHTML, totalFramesText) {
         const datasetDisplayName = this.getDatasetDisplayName(dataset);
+        // Page field: robot_type (mapped from robot_name/device_model in data-manager)
         let robotDisplay = 'N/A';
-        if (dataset.robot || dataset.robot_type || dataset.device_model) {
+        if (dataset.robot != null || dataset.robot_type != null) {
             const robots = [];
-            if (dataset.robot) {
+            if (dataset.robot != null) {
                 const robotList = Array.isArray(dataset.robot) ? dataset.robot : [dataset.robot];
-                robots.push(...robotList);
+                robots.push(...robotList.filter(Boolean));
             }
             if (dataset.robot_type && !robots.includes(dataset.robot_type)) {
                 robots.push(dataset.robot_type);
             }
-            if (dataset.device_model && Array.isArray(dataset.device_model)) {
-                robots.push(...dataset.device_model);
+            if (robots.length > 0) {
+                const displayRobots = robots.map(r => this.getRobotDisplayLabel(r));
+                robotDisplay = displayRobots.join(', ');
             }
-            const displayRobots = robots.map(r => this.getRobotDisplayLabel(r));
-            robotDisplay = displayRobots.join(', ');
         }
 
         // Build camera information
@@ -463,17 +448,13 @@ const Templates = {
             }
         }
 
-        // Build sub-tasks information
         let subTasksHTML = 'N/A';
         if (Array.isArray(dataset.sub_tasks) && dataset.sub_tasks.length > 0) {
             subTasksHTML = dataset.sub_tasks.map(task => `<div style="margin-bottom: 2px;">• ${task}</div>`).join('');
-        } else if (Array.isArray(dataset.raw?.sub_tasks) && dataset.raw.sub_tasks.length > 0) {
-            subTasksHTML = dataset.raw.sub_tasks.map(task => `<div style="margin-bottom: 2px;">• ${task}</div>`).join('');
         }
 
-        // Build authors information
         let authorsHTML = 'N/A';
-        const authorsData = dataset.authors || dataset.raw?.authors;
+        const authorsData = dataset.authors;
         if (authorsData) {
             const contributedBy = authorsData.contributed_by;
             const annotatedBy = authorsData.annotated_by;
@@ -495,13 +476,7 @@ const Templates = {
 
         const endEffectorValues = Array.isArray(dataset.endEffectors)
             ? dataset.endEffectors
-            : dataset.endEffector
-                ? [dataset.endEffector]
-                : Array.isArray(dataset.raw?.end_effector_type)
-                    ? dataset.raw.end_effector_type
-                    : dataset.raw?.end_effector_type
-                        ? [dataset.raw.end_effector_type]
-                        : [];
+            : dataset.endEffector ? [dataset.endEffector] : [];
         const endEffectorText = endEffectorValues.length > 0 ? endEffectorValues.join(', ') : 'N/A';
 
         return `
@@ -510,25 +485,24 @@ const Templates = {
                 <div class="detail-info-section">
                     <h4 class="detail-section-title">Basic Information</h4>
                     ${this.buildDetailInfoItem('Dataset Name', datasetDisplayName)}
-                    ${this.buildDetailInfoItem('Dataset UUID', dataset.dataset_uuid || dataset.raw?.dataset_uuid || 'N/A')}
-                    ${this.buildDetailInfoItem('Task Description', dataset.tasks || dataset.raw?.tasks || dataset.description || 'N/A')}
+                    ${this.buildDetailInfoItem('Dataset UUID', dataset.dataset_uuid ?? 'N/A')}
+                    ${this.buildDetailInfoItem('Task Description', dataset.tasks ?? dataset.description ?? 'N/A')}
                 ${this.buildDetailInfoItem('Device Model (Robot)', robotDisplay)}
-                    ${this.buildDetailInfoItem('Dataset Size', dataset.datasetSize || dataset.raw?.dataset_size || 'N/A')}
+                    ${this.buildDetailInfoItem('Dataset Size', dataset.datasetSize ?? 'N/A')}
                     ${this.buildDetailInfoItem('Total Frames', totalFramesText)}
-                    ${this.buildDetailInfoItem('License', dataset.license || dataset.raw?.license || 'N/A')}
-                    ${this.buildDetailInfoItem('Language', Array.isArray(dataset.language) ? dataset.language.join(', ') : (Array.isArray(dataset.raw?.language) ? dataset.raw.language.join(', ') : 'N/A'))}
-                    ${this.buildDetailInfoItem('Task Categories', Array.isArray(dataset.task_categories) ? dataset.task_categories.join(', ') : (Array.isArray(dataset.raw?.task_categories) ? dataset.raw.task_categories.join(', ') : 'N/A'))}
-                    ${this.buildDetailInfoItem('Tags', Array.isArray(dataset.tags) ? dataset.tags.join(', ') : (Array.isArray(dataset.raw?.tags) ? dataset.raw.tags.join(', ') : 'N/A'))}
+                    ${this.buildDetailInfoItem('License', dataset.license ?? 'N/A')}
+                    ${this.buildDetailInfoItem('Language', Array.isArray(dataset.language) ? dataset.language.join(', ') : 'N/A')}
+                    ${this.buildDetailInfoItem('Task Categories', Array.isArray(dataset.task_categories) ? dataset.task_categories.join(', ') : 'N/A')}
+                    ${this.buildDetailInfoItem('Tags', Array.isArray(dataset.tags) ? dataset.tags.join(', ') : 'N/A')}
                 </div>
 
                 <!-- Technical Details Section -->
                 <div class="detail-info-section">
                     <h4 class="detail-section-title">Technical Details</h4>
                     ${this.buildDetailInfoItem('End Effector Type', endEffectorText)}
-                    ${/* ${this.buildDetailInfoItem('Operation Platform Height', dataset.platformHeight !== undefined ? `${dataset.platformHeight} cm` : (dataset.raw?.operation_platform_height !== undefined ? `${dataset.raw.operation_platform_height} cm` : 'N/A'))} */ ''}
                     ${this.buildDetailInfoItem('Scene Type', sceneTypeText)}
                     ${this.buildDetailInfoItem('Atomic Actions', atomicActionsText)}
-                    ${this.buildDetailInfoItem('Codebase Version', dataset.codebase_version || dataset.raw?.codebase_version || 'N/A')}
+                    ${this.buildDetailInfoItem('Codebase Version', dataset.codebase_version ?? 'N/A')}
                 </div>
 
                 <!-- Statistics Section -->
@@ -559,7 +533,7 @@ const Templates = {
                 <div class="detail-info-section">
                     <h4 class="detail-section-title">Annotations</h4>
                     ${(() => {
-                        const annotations = dataset.annotations || dataset.raw?.annotations || {};
+                        const annotations = dataset.annotations || {};
                         const availableAnnotations = [];
                         if (annotations.subtask_annotation) availableAnnotations.push('Subtask');
                         if (annotations.scene_annotation) availableAnnotations.push('Scene');
@@ -576,26 +550,26 @@ const Templates = {
                 <div class="detail-info-section">
                     <h4 class="detail-section-title">Authors & Links</h4>
                     ${this.buildDetailInfoItem('Authors', authorsHTML)}
-                    ${this.buildDetailInfoItem('Homepage', dataset.homepage || dataset.raw?.homepage ? `<a href="${dataset.homepage || dataset.raw?.homepage}" target="_blank">${dataset.homepage || dataset.raw?.homepage}</a>` : 'N/A')}
-                    ${this.buildDetailInfoItem('Paper', dataset.paper || dataset.raw?.paper ? `<a href="${dataset.paper || dataset.raw?.paper}" target="_blank">${dataset.paper || dataset.raw?.paper}</a>` : 'N/A')}
-                    ${this.buildDetailInfoItem('Repository', dataset.repository || dataset.raw?.repository ? `<a href="${dataset.repository || dataset.raw?.repository}" target="_blank">${dataset.repository || dataset.raw?.repository}</a>` : 'N/A')}
-                    ${this.buildDetailInfoItem('Issues URL', dataset.issues_url || dataset.raw?.issues_url ? `<a href="${dataset.issues_url || dataset.raw?.issues_url}" target="_blank">${dataset.issues_url || dataset.raw?.issues_url}</a>` : 'N/A')}
-                    ${this.buildDetailInfoItem('Project Page', dataset.project_page || dataset.raw?.project_page ? `<a href="${dataset.project_page || dataset.raw?.project_page}" target="_blank">${dataset.project_page || dataset.raw?.project_page}</a>` : 'N/A')}
+                    ${this.buildDetailInfoItem('Homepage', dataset.homepage ? `<a href="${dataset.homepage}" target="_blank">${dataset.homepage}</a>` : 'N/A')}
+                    ${this.buildDetailInfoItem('Paper', dataset.paper ? `<a href="${dataset.paper}" target="_blank">${dataset.paper}</a>` : 'N/A')}
+                    ${this.buildDetailInfoItem('Repository', dataset.repository ? `<a href="${dataset.repository}" target="_blank">${dataset.repository}</a>` : 'N/A')}
+                    ${this.buildDetailInfoItem('Issues URL', dataset.issues_url ? `<a href="${dataset.issues_url}" target="_blank">${dataset.issues_url}</a>` : 'N/A')}
+                    ${this.buildDetailInfoItem('Project Page', dataset.project_page ? `<a href="${dataset.project_page}" target="_blank">${dataset.project_page}</a>` : 'N/A')}
                 </div>
 
                 <!-- Contact & Support Section -->
                 <div class="detail-info-section">
                     <h4 class="detail-section-title">Contact & Support</h4>
-                    ${this.buildDetailInfoItem('Contact Info', dataset.contact_info || dataset.raw?.contact_info || 'N/A')}
-                    ${this.buildDetailInfoItem('Support Info', dataset.support_info || dataset.raw?.support_info || 'N/A')}
+                    ${this.buildDetailInfoItem('Contact Info', dataset.contact_info ?? 'N/A')}
+                    ${this.buildDetailInfoItem('Support Info', dataset.support_info ?? 'N/A')}
                 </div>
 
                 <!-- Citations Section -->
                 <div class="detail-info-section">
                     <h4 class="detail-section-title">Citations</h4>
-                    ${this.buildDetailInfoItem('Citation BibTeX', dataset.citation_bibtex || dataset.raw?.citation_bibtex ? `<pre style="font-size: 0.75rem; white-space: pre-wrap;">${dataset.citation_bibtex || dataset.raw?.citation_bibtex}</pre>` : 'N/A')}
-                    ${this.buildDetailInfoItem('Additional Citations', dataset.additional_citations || dataset.raw?.additional_citations || 'N/A')}
-                    ${this.buildDetailInfoItem('Version Info', dataset.version_info || dataset.raw?.version_info || 'N/A')}
+                    ${this.buildDetailInfoItem('Citation BibTeX', dataset.citation_bibtex ? `<pre style="font-size: 0.75rem; white-space: pre-wrap;">${dataset.citation_bibtex}</pre>` : 'N/A')}
+                    ${this.buildDetailInfoItem('Additional Citations', dataset.additional_citations ?? 'N/A')}
+                    ${this.buildDetailInfoItem('Version Info', dataset.version_info ?? 'N/A')}
                 </div>
             </div>
         `;

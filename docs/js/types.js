@@ -5,9 +5,8 @@
 
 /**
  * @typedef {Object} DatasetObject
- * @property {string} name - Object name
- * @property {string[]} hierarchy - Object hierarchy levels
- * @property {Object} raw - Raw object data
+ * @property {string} name - Object name (page field: object_name)
+ * @property {string[]} hierarchy - Object hierarchy levels (level1..level5)
  */
 
 /**
@@ -25,7 +24,6 @@
  * @property {string[]} endEffectors - End effector types (flat list)
  * @property {string} [endEffector] - Primary end effector (legacy single value)
  * @property {number} platformHeight - Operation platform height
- * @property {Object} raw - Raw dataset data
  * @property {function(): string[]} getAllScenes - Get all scenes
  * @property {function(string): boolean} hasScene - Check if has scene
  * @property {function(number, string): DatasetObject[]} getObjectsByLevel - Get objects by level

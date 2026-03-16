@@ -148,18 +148,115 @@ export class DataManager {
     }
     
     /**
-     * Create dataset object from raw data
-     * @param {string} path - Dataset path
-     * @param {Object} raw - Raw dataset data
-     * @returns {Dataset} Dataset object
+     * Map info.yaml robot_name/device_model to page field robot_type.
+     * Prefer robot_name; else device_model (scalar or first element if array); else "".
+     * @param {Object} raw - Top-level raw object
+     * @param {Object} rawData - raw.raw fallback
+     * @returns {string}
+     */
+    _mapRobotType(raw, rawData) {
+        const robotName = raw?.robot_name ?? rawData?.robot_name;
+        if (robotName != null && String(robotName).trim() !== '') return String(robotName).trim();
+        const deviceModel = raw?.device_model ?? rawData?.device_model;
+        if (deviceModel == null) return '';
+        const value = Array.isArray(deviceModel) ? deviceModel[0] : deviceModel;
+        return typeof value === 'string' && value.trim() !== '' ? value.trim() : '';
+    }
+
+    /**
+     * Map info.yaml scene_type to page field (string[]).
+     * If scene_type is object { level1..level5 }, build array from non-null values; else use array as-is.
+     * @param {Object} raw - Top-level raw object
+     * @param {Object} rawData - raw.raw fallback
+     * @returns {string[]}
+     */
+    _mapSceneType(raw, rawData) {
+        const src = raw?.scene_type ?? rawData?.scene_type;
+        if (src == null) return [];
+        if (Array.isArray(src)) return src.filter(v => v != null && String(v).trim() !== '').map(v => String(v).trim());
+        if (typeof src === 'object' && !Array.isArray(src)) {
+            const arr = [src.level1, src.level2, src.level3, src.level4, src.level5]
+                .filter(v => v != null && String(v).trim() !== '')
+                .map(v => String(v).trim());
+            return arr;
+        }
+        return [];
+    }
+
+    /**
+     * Map task_instruction/sub_tasks to page field tasks (string).
+     * If task_instruction is string use it; if list, join with newline or first; else first of sub_tasks, or "".
+     * @param {Object} raw - Top-level raw object
+     * @param {Object} rawData - raw.raw fallback
+     * @returns {string}
+     */
+    _mapTasks(raw, rawData) {
+        const taskInstruction = raw?.task_instruction ?? rawData?.task_instruction;
+        if (taskInstruction != null) {
+            if (typeof taskInstruction === 'string' && taskInstruction.trim() !== '') return taskInstruction.trim();
+            if (Array.isArray(taskInstruction) && taskInstruction.length > 0) {
+                const first = taskInstruction[0];
+                return typeof first === 'string' ? first.trim() : String(first);
+            }
+        }
+        const subTasks = raw?.sub_tasks ?? rawData?.sub_tasks;
+        if (Array.isArray(subTasks) && subTasks.length > 0) {
+            const first = subTasks[0];
+            return typeof first === 'string' ? first.trim() : String(first);
+        }
+        return '';
+    }
+
+    /**
+     * Build frame_range display string from frame_num and/or statistics.total_frames.
+     * @param {Object} raw - Top-level raw object
+     * @param {Object} rawData - raw.raw fallback
+     * @returns {string}
+     */
+    _mapFrameRange(raw, rawData) {
+        const explicit = raw?.frame_range ?? rawData?.frame_range;
+        if (explicit != null && String(explicit).trim() !== '') return String(explicit).trim();
+        const frameNum = raw?.frame_num ?? rawData?.frame_num;
+        if (frameNum != null && String(frameNum).trim() !== '') return String(frameNum).trim();
+        const stats = raw?.statistics ?? rawData?.statistics;
+        const totalFrames = stats?.total_frames;
+        if (totalFrames != null) return `0-${Number(totalFrames)}`;
+        return '';
+    }
+
+    /**
+     * Map dataset_size: top-level dataset_size, else statistics.dataset_size, else "".
+     * @param {Object} raw - Top-level raw object
+     * @param {Object} rawData - raw.raw fallback
+     * @returns {string|number}
+     */
+    _mapDatasetSize(raw, rawData) {
+        const top = raw?.dataset_size ?? rawData?.dataset_size;
+        if (top != null && (typeof top === 'string' ? top.trim() !== '' : true)) return top;
+        const stats = raw?.statistics ?? rawData?.statistics;
+        const fromStats = stats?.dataset_size;
+        if (fromStats != null && (typeof fromStats === 'string' ? fromStats.trim() !== '' : true)) return fromStats;
+        return '';
+    }
+
+    /**
+     * Create dataset object from raw data.
+     * Applies page-field mapping per DATA-REQUIREMENTS (info.yaml -> page fields).
+     * @param {string} path - Dataset path (from consolidated key or YAML filename stem)
+     * @param {Object} raw - Raw dataset data (info.yaml shape)
+     * @returns {Dataset} Dataset object with page field names
      */
     createDatasetObject(path, raw) {
-        // 优先使用 raw.raw 部分的数据（如果存在），否则使用顶层数据
-        // 这是因为很多数据集的顶层字段为空，但 raw 部分有正确数据
         const rawData = raw.raw || {};
 
         const originalName = path || raw.dataset_name || '';
         const displayName = this.mapDatasetDisplayName(originalName);
+
+        const robotType = this._mapRobotType(raw, rawData);
+        const sceneTypeArr = this._mapSceneType(raw, rawData);
+        const tasksStr = this._mapTasks(raw, rawData);
+        const frameRangeStr = this._mapFrameRange(raw, rawData);
+        const datasetSizeVal = this._mapDatasetSize(raw, rawData);
 
         const endEffectors = (() => {
             const source = raw.end_effector_type !== undefined ? raw.end_effector_type : rawData.end_effector_type;
@@ -170,20 +267,17 @@ export class DataManager {
                 .filter(value => value);
         })();
 
+        const statistics = raw.statistics || rawData.statistics || {};
+
         return {
             path: path,
             name: originalName,
             displayName,
             video_url: `${this.config.paths.videos}/${path}.mp4`,
-            // Thumbnails are provided directly from assets/thumbnails directory
-            // No automatic thumbnail generation - thumbnails must exist in assets/thumbnails/${path}.jpg
             thumbnail_url: `${this.config.paths.assetsRoot}/thumbnails/${path}.jpg`,
-            // 使用新字段 tasks（从 meta/tasks.jsonl 读取的精确任务描述）
-            // 而非旧的 task_descriptions（YAML中可能包含错误）
-            description: raw.tasks || (rawData.task_descriptions && rawData.task_descriptions[0]) || '',
-            // 优先从 raw.raw 部分读取，因为顶层字段经常为空
-            scenes: raw.scene_type && raw.scene_type.length > 0 ? raw.scene_type : (rawData.scene_type || []),
-            actions: raw.atomic_actions && raw.atomic_actions.length > 0 ? raw.atomic_actions : (rawData.atomic_actions || []),
+            description: tasksStr,
+            scenes: sceneTypeArr,
+            actions: raw.atomic_actions?.length > 0 ? raw.atomic_actions : (rawData.atomic_actions || []),
             objects: (function() {
                 const topObjects = raw.objects || [];
                 const rawObjects = rawData.objects || [];
@@ -191,34 +285,28 @@ export class DataManager {
                 return objectsToUse.map(obj => ({
                     name: obj.object_name,
                     hierarchy: [
-                        obj.level1, 
-                        obj.level2, 
-                        obj.level3, 
-                        obj.level4, 
+                        obj.level1,
+                        obj.level2,
+                        obj.level3,
+                        obj.level4,
                         obj.level5
-                    ].filter(level => level !== null && level !== undefined),
-                    raw: obj
+                    ].filter(level => level !== null && level !== undefined)
                 }));
             })(),
-            // 使用新字段 robot_type（从 meta/info.json 读取）
-            // 不使用旧的 device_model（YAML中的字段可能有错误）
-            robot: raw.robot_type,
+            robot: robotType || undefined,
             endEffector: endEffectors[0] || undefined,
             endEffectors,
             platformHeight: raw.operation_platform_height !== undefined ? raw.operation_platform_height : rawData.operation_platform_height,
 
-            // 数据集大小相关信息
-            frameRange: raw.frame_range || rawData.frame_range,
-            datasetSize: raw.dataset_size || rawData.dataset_size,
-            statistics: raw.statistics || rawData.statistics,
+            frameRange: frameRangeStr || undefined,
+            datasetSize: datasetSizeVal || undefined,
+            statistics,
 
-            // Additional metadata
             cameras: raw.cameras || rawData.cameras || [],
             license: raw.license || rawData.license,
             tags: raw.tags || rawData.tags || [],
-            robot_type: raw.robot_type || rawData.robot_type,
+            robot_type: robotType,
 
-            // 扩展的元数据字段（用于详情弹出窗口）
             dataset_uuid: raw.dataset_uuid || rawData.dataset_uuid,
             language: raw.language || rawData.language || [],
             task_categories: raw.task_categories || rawData.task_categories || [],
@@ -240,9 +328,8 @@ export class DataManager {
             depth_enabled: raw.depth_enabled || rawData.depth_enabled,
             data_schema: raw.data_schema || rawData.data_schema,
             structure: raw.structure || rawData.structure,
-            tasks: raw.tasks || rawData.tasks,
+            tasks: tasksStr,
 
-            raw: raw,
             getAllScenes: function() { return this.scenes; },
             hasScene: function(sceneType) { return this.scenes.includes(sceneType); },
             getObjectsByLevel: function(level, value) {
@@ -308,7 +395,9 @@ export class DataManager {
             }
             
             const indexData = await indexRes.json();
-            const fileList = Array.isArray(indexData) ? indexData : Object.keys(indexData);
+            // data_index.json: prefer { "datasets": ["path/without/ext", ...], "count": N }; else array or object keys
+            let fileList = indexData?.datasets;
+            if (!Array.isArray(fileList)) fileList = Array.isArray(indexData) ? indexData : Object.keys(indexData || {});
             
             loadingProgress.innerHTML = `
                 <div style="color: #ff9800;">Loading ${fileList.length} YAML files...</div>
@@ -325,14 +414,17 @@ export class DataManager {
                 await this.loadJsYamlLibrary();
             }
             
-            // Load YAML files one by one
+            // Load YAML files one by one. Entry is path (with or without .yml/.yaml); path stem used as key.
             const allData = {};
             for (let i = 0; i < fileList.length; i++) {
                 const file = fileList[i];
-                const path = file.replace(/\.ya?ml$/, '');
-                
+                const path = typeof file === 'string' ? file.replace(/\.ya?ml$/i, '') : '';
+                const requestPath = path && !/\.ya?ml$/i.test(String(file)) ? `${path}.yaml` : file;
                 try {
-                    const yamlRes = await fetch(`${this.config.paths.datasetInfo}/${file}`);
+                    let yamlRes = await fetch(`${this.config.paths.datasetInfo}/${requestPath}`);
+                    if (!yamlRes.ok && requestPath.endsWith('.yaml')) {
+                        yamlRes = await fetch(`${this.config.paths.datasetInfo}/${path}.yml`);
+                    }
                     const yamlText = await yamlRes.text();
                     const parsed = jsyaml.load(yamlText);
                     allData[path] = parsed;

@@ -23,17 +23,9 @@ import {
 } from './data.js';
 
 function getDatasetEndEffectors(ds) {
-    if (Array.isArray(ds.endEffectors)) {
-        return ds.endEffectors;
-    }
-    if (ds.endEffector) {
-        return [ds.endEffector];
-    }
-    const rawValue = ds.raw?.end_effector_type;
-    if (Array.isArray(rawValue)) {
-        return rawValue;
-    }
-    return rawValue ? [rawValue] : [];
+    if (Array.isArray(ds.endEffectors)) return ds.endEffectors;
+    if (ds.endEffector) return [ds.endEffector];
+    return [];
 }
 
 /**
