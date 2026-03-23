@@ -18,7 +18,7 @@
     "title": "RoboCOIN-DataManager"
   },
   "defaults": {
-    "enableExclude": true,
+    "enableExclude": false,
     "layout": {
       "contentPadding": 12
     },
