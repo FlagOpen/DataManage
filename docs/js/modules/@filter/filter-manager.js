@@ -82,10 +82,29 @@ export class FilterManager {
     }
 
     /**
+     * Normalize robot identifier to a canonical key for consistent filtering.
+     * @param {unknown} robotId
+     * @returns {string}
+     */
+    normalizeRobotId(robotId) {
+        if (robotId === null || robotId === undefined) {
+            return '';
+        }
+        const raw = String(robotId);
+        if (
+            this.robotAliasManager &&
+            typeof this.robotAliasManager.getCanonicalRobotKey === 'function'
+        ) {
+            return this.robotAliasManager.getCanonicalRobotKey(raw) || raw;
+        }
+        return raw;
+    }
+
+    /**
      * Build filter groups from datasets
      */
     buildFilterGroups() {
-        this.filterGroups = buildFilterGroups(this.datasets);
+        this.filterGroups = buildFilterGroups(this.datasets, this.normalizeRobotId.bind(this));
         // Render UI
         this.renderFilterGroups();
     }
@@ -357,7 +376,7 @@ export class FilterManager {
                     match = ds.scenes && ds.scenes.some(v => values.includes(v));
                 } else if (key === 'robot') {
                     const robots = Array.isArray(ds.robot) ? ds.robot : [ds.robot];
-                    match = robots.some(r => values.includes(r));
+                    match = robots.some(r => values.includes(this.normalizeRobotId(r)));
                 } else if (key === 'end') {
                     const endEffectors = getDatasetEndEffectors(ds);
                     match = endEffectors.some(value => values.includes(value));
@@ -504,7 +523,11 @@ export class FilterManager {
      * Calculate static filter counts for UI display (only called once at initialization)
      */
     calculateStaticFilterCounts() {
-        this.staticFilterCounts = calculateStaticFilterCounts(this.datasets, this.filterGroups);
+        this.staticFilterCounts = calculateStaticFilterCounts(
+            this.datasets,
+            this.filterGroups,
+            this.normalizeRobotId.bind(this)
+        );
     }
 
     /**
@@ -513,7 +536,13 @@ export class FilterManager {
      * @param {Map} hierarchyMap - Hierarchy map
      */
     calculateStaticHierarchyCounts(key, hierarchyMap) {
-        calculateStaticHierarchyCounts(this.datasets, key, hierarchyMap, this.staticFilterCounts);
+        calculateStaticHierarchyCounts(
+            this.datasets,
+            key,
+            hierarchyMap,
+            this.staticFilterCounts,
+            this.normalizeRobotId.bind(this)
+        );
     }
 
     /**
@@ -527,7 +556,12 @@ export class FilterManager {
         // Recalculate counts for this category
         if (group.type === 'flat') {
             group.values.forEach(value => {
-                const count = calculateAffectedCount(this.datasets, categoryKey, value);
+                const count = calculateAffectedCount(
+                    this.datasets,
+                    categoryKey,
+                    value,
+                    this.normalizeRobotId.bind(this)
+                );
                 this.staticFilterCounts.set(`${categoryKey}:${value}`, count);
             });
         } else if (group.type === 'hierarchical') {
@@ -574,7 +608,12 @@ export class FilterManager {
         for (const [key, group] of Object.entries(this.filterGroups)) {
             if (group.type === 'flat') {
                 group.values.forEach(value => {
-                    const count = calculateAffectedCount(this.datasets, key, value);
+                    const count = calculateAffectedCount(
+                        this.datasets,
+                        key,
+                        value,
+                        this.normalizeRobotId.bind(this)
+                    );
                     this.filterCounts.set(`${key}:${value}`, count);
                 });
             } else if (group.type === 'hierarchical') {
@@ -617,7 +656,7 @@ export class FilterManager {
                 match = ds.scenes && ds.scenes.includes(filterValue);
             } else if (filterKey === 'robot') {
                 const robots = Array.isArray(ds.robot) ? ds.robot : [ds.robot];
-                match = robots.includes(filterValue);
+                match = robots.some(r => this.normalizeRobotId(r) === filterValue);
             } else if (filterKey === 'end') {
                 const endEffectors = getDatasetEndEffectors(ds);
                 match = endEffectors.includes(filterValue);

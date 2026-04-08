@@ -14,11 +14,26 @@ function getDatasetEndEffectors(ds) {
 }
 
 /**
+ * Normalize robot id to canonical value when possible.
+ * @param {string} robotId
+ * @param {(robotId: string) => string} [normalizeRobot]
+ * @returns {string}
+ */
+function normalizeRobotId(robotId, normalizeRobot) {
+    if (!robotId) return '';
+    const raw = String(robotId);
+    if (typeof normalizeRobot === 'function') {
+        return normalizeRobot(raw);
+    }
+    return raw;
+}
+
+/**
  * Build filter groups from datasets.
  * @param {Dataset[]} datasets
  * @returns {Object<string, FilterGroup>}
  */
-export function buildFilterGroups(datasets) {
+export function buildFilterGroups(datasets, normalizeRobot) {
     const groups = {
         'frame range': {
             title: 'frame range',
@@ -62,7 +77,12 @@ export function buildFilterGroups(datasets) {
         }
         if (ds.robot) {
             const robots = Array.isArray(ds.robot) ? ds.robot : [ds.robot];
-            robots.forEach(r => groups.robot.values.add(r));
+            robots.forEach(r => {
+                const normalized = normalizeRobotId(r, normalizeRobot);
+                if (normalized) {
+                    groups.robot.values.add(normalized);
+                }
+            });
         }
         const endEffectors = getDatasetEndEffectors(ds);
         endEffectors.forEach(value => groups.end.values.add(value));
@@ -87,7 +107,7 @@ export function buildFilterGroups(datasets) {
  * @param {string} filterValue
  * @returns {number}
  */
-export function calculateAffectedCount(datasets, filterKey, filterValue) {
+export function calculateAffectedCount(datasets, filterKey, filterValue, normalizeRobot) {
     let count = 0;
 
     datasets.forEach(ds => {
@@ -99,7 +119,7 @@ export function calculateAffectedCount(datasets, filterKey, filterValue) {
             match = ds.scenes && ds.scenes.includes(filterValue);
         } else if (filterKey === 'robot') {
             const robots = Array.isArray(ds.robot) ? ds.robot : [ds.robot];
-            match = robots.includes(filterValue);
+            match = robots.some(r => normalizeRobotId(r, normalizeRobot) === filterValue);
         } else if (filterKey === 'end') {
             const endEffectors = getDatasetEndEffectors(ds);
             match = endEffectors.includes(filterValue);
@@ -123,17 +143,17 @@ export function calculateAffectedCount(datasets, filterKey, filterValue) {
  * @param {Object<string, FilterGroup>} filterGroups
  * @returns {Map<string, number>}
  */
-export function calculateStaticFilterCounts(datasets, filterGroups) {
+export function calculateStaticFilterCounts(datasets, filterGroups, normalizeRobot) {
     const staticCounts = new Map();
 
     for (const [key, group] of Object.entries(filterGroups)) {
         if (group.type === 'flat') {
             group.values.forEach(value => {
-                const count = calculateAffectedCount(datasets, key, value);
+                const count = calculateAffectedCount(datasets, key, value, normalizeRobot);
                 staticCounts.set(`${key}:${value}`, count);
             });
         } else if (group.type === 'hierarchical') {
-            calculateStaticHierarchyCounts(datasets, key, group.values, staticCounts);
+            calculateStaticHierarchyCounts(datasets, key, group.values, staticCounts, normalizeRobot);
         }
     }
 
@@ -147,13 +167,13 @@ export function calculateStaticFilterCounts(datasets, filterGroups) {
  * @param {Map} hierarchyMap
  * @param {Map<string, number>} staticCounts
  */
-export function calculateStaticHierarchyCounts(datasets, key, hierarchyMap, staticCounts) {
+export function calculateStaticHierarchyCounts(datasets, key, hierarchyMap, staticCounts, normalizeRobot) {
     hierarchyMap.forEach((node, value) => {
-        const count = calculateAffectedCount(datasets, key, value);
+        const count = calculateAffectedCount(datasets, key, value, normalizeRobot);
         staticCounts.set(`${key}:${value}`, count);
 
         if (node.children.size > 0) {
-            calculateStaticHierarchyCounts(datasets, key, node.children, staticCounts);
+            calculateStaticHierarchyCounts(datasets, key, node.children, staticCounts, normalizeRobot);
         }
     });
 }

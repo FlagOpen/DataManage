@@ -37,14 +37,14 @@ export class DataManager {
     async loadExcludedDatasets() {
         // Check if exclusions are enabled
         if (this.config.enableExclude === false) {
-            console.log('ℹ️ Dataset exclusions are disabled (enableExclude: false). Skipping exclude.json.');
+            console.log('INFO: Dataset exclusions are disabled (enableExclude: false). Skipping exclude.json.');
             return;
         }
 
         try {
             const response = await fetch(`${this.config.paths.info}/exclude.json`);
             if (!response.ok) {
-                console.warn(`⚠️ Failed to load assets/info/exclude.json (${response.status}). Continuing without exclusions.`);
+                console.warn(`WARN: Failed to load assets/info/exclude.json (${response.status}). Continuing without exclusions.`);
                 return;
             }
 
@@ -54,10 +54,10 @@ export class DataManager {
                     .map(name => typeof name === 'string' ? name.trim() : '')
                     .filter(Boolean)
                     .forEach(name => this.excludedDatasets.add(name));
-                console.log(`🧹 Loaded ${this.excludedDatasets.size} excluded datasets.`);
+                console.log(`INFO: Loaded ${this.excludedDatasets.size} excluded datasets.`);
             }
         } catch (error) {
-            console.warn('⚠️ Could not load assets/info/exclude.json. Continuing without exclusions.', error);
+            console.warn('WARN: Could not load assets/info/exclude.json. Continuing without exclusions.', error);
         }
     }
     
@@ -73,25 +73,25 @@ export class DataManager {
             this.config = ConfigManager.getConfig();
             await this.loadExcludedDatasets();
 
-            console.log('🚀 Attempting to load consolidated JSON (preferred)...');
+            console.log('INFO: Attempting to load consolidated JSON (preferred)...');
             const startTime = performance.now();
 
             loadingProgress.textContent = 'Loading consolidated data...';
             loadingBar.style.width = '10%';
 
             try {
-                console.log('📄 Fetching consolidated_datasets.json...');
+                console.log('INFO: Fetching consolidated_datasets.json...');
                 const res = await fetch(`${this.config.paths.info}/consolidated_datasets.json`);
 
                 if (res.ok) {
-                    console.log('✅ Consolidated JSON found! Processing...');
+                    console.log('INFO: Consolidated JSON found! Processing...');
                     loadingBar.style.width = '50%';
 
                     const allData = await res.json();
                     loadingBar.style.width = '75%';
 
                     const datasetCount = Object.keys(allData).length;
-                    console.log(`✓ Loaded ${datasetCount} datasets from consolidated JSON`);
+                    console.log(`OK: Loaded ${datasetCount} datasets from consolidated JSON`);
 
                     this.datasets = Object.entries(allData).map(([path, raw]) => this.createDatasetObject(path, raw));
                     this.applyExclusions();
@@ -102,20 +102,20 @@ export class DataManager {
                     const endTime = performance.now();
                     const loadTime = (endTime - startTime).toFixed(2);
 
-                    console.log(`✓ Loaded ${this.datasets.length} datasets in ${loadTime}ms (${(loadTime / this.datasets.length).toFixed(2)}ms per dataset)`);
-                    console.log('🎉 Using optimized consolidated JSON!');
+                    console.log(`OK: Loaded ${this.datasets.length} datasets in ${loadTime}ms (${(loadTime / this.datasets.length).toFixed(2)}ms per dataset)`);
+                    console.log('OK: Using optimized consolidated JSON!');
 
                     return this.datasets;
                 } else if (res.status === 404) {
-                    console.warn('⚠️ Consolidated JSON not found (404). This is expected in development.');
+                    console.warn('WARN: Consolidated JSON not found (404). This is expected in development.');
                 } else {
-                    console.warn(`⚠️ Consolidated JSON request failed (${res.status}). Will try YAML fallback.`);
+                    console.warn(`WARN: Consolidated JSON request failed (${res.status}). Will try YAML fallback.`);
                 }
             } catch (jsonError) {
-                console.warn('⚠️ Failed to fetch consolidated JSON:', jsonError.message);
+                console.warn('WARN: Failed to fetch consolidated JSON:', jsonError.message);
             }
 
-            console.log('📁 Falling back to YAML mode...');
+            console.log('INFO: Falling back to YAML mode...');
             await this.loadDatasetsFromYAML(loadingProgress, loadingBar);
             this.applyExclusions();
             return this.datasets;
@@ -143,35 +143,35 @@ export class DataManager {
 
         const removed = beforeCount - this.datasets.length;
         if (removed > 0) {
-            console.log(`🚫 Excluded ${removed} datasets defined in assets/info/exclude.json.`);
+            console.log(`INFO: Excluded ${removed} datasets defined in assets/info/exclude.json.`);
         }
     }
     
     /**
-     * Map info.yaml robot_name/device_model to page field robot_type.
-     * Prefer robot_name; else device_model (scalar or first element if array); else "".
+     * Map robot_type from robot_name only.
      * @param {Object} raw - Top-level raw object
-     * @param {Object} rawData - raw.raw fallback
      * @returns {string}
      */
-    _mapRobotType(raw, rawData) {
-        const robotName = raw?.robot_name ?? rawData?.robot_name;
-        if (robotName != null && String(robotName).trim() !== '') return String(robotName).trim();
-        const deviceModel = raw?.device_model ?? rawData?.device_model;
-        if (deviceModel == null) return '';
-        const value = Array.isArray(deviceModel) ? deviceModel[0] : deviceModel;
-        return typeof value === 'string' && value.trim() !== '' ? value.trim() : '';
+    _mapRobotType(raw) {
+        const robotName = raw?.robot_name;
+        if (Array.isArray(robotName)) {
+            const first = robotName.find(v => typeof v === 'string' && v.trim() !== '');
+            return first ? first.trim() : '';
+        }
+        if (typeof robotName === 'string') {
+            return robotName.trim();
+        }
+        return '';
     }
 
     /**
-     * Map info.yaml scene_type to page field (string[]).
-     * If scene_type is object { level1..level5 }, build array from non-null values; else use array as-is.
+     * Map scene_type to page field (string[]), directly from scene_type field.
+     * If scene_type is object {level1..level5}, flatten non-empty levels for UI.
      * @param {Object} raw - Top-level raw object
-     * @param {Object} rawData - raw.raw fallback
      * @returns {string[]}
      */
-    _mapSceneType(raw, rawData) {
-        const src = raw?.scene_type ?? rawData?.scene_type;
+    _mapSceneType(raw) {
+        const src = raw?.scene_type;
         if (src == null) return [];
         if (Array.isArray(src)) return src.filter(v => v != null && String(v).trim() !== '').map(v => String(v).trim());
         if (typeof src === 'object' && !Array.isArray(src)) {
@@ -180,62 +180,46 @@ export class DataManager {
                 .map(v => String(v).trim());
             return arr;
         }
+        if (typeof src === 'string' && src.trim() !== '') return [src.trim()];
         return [];
     }
 
     /**
-     * Map task_instruction/sub_tasks to page field tasks (string).
-     * If task_instruction is string use it; if list, join with newline or first; else first of sub_tasks, or "".
+     * Map tasks from task_instruction only.
      * @param {Object} raw - Top-level raw object
-     * @param {Object} rawData - raw.raw fallback
      * @returns {string}
      */
-    _mapTasks(raw, rawData) {
-        const taskInstruction = raw?.task_instruction ?? rawData?.task_instruction;
+    _mapTasks(raw) {
+        const taskInstruction = raw?.task_instruction;
         if (taskInstruction != null) {
             if (typeof taskInstruction === 'string' && taskInstruction.trim() !== '') return taskInstruction.trim();
             if (Array.isArray(taskInstruction) && taskInstruction.length > 0) {
-                const first = taskInstruction[0];
-                return typeof first === 'string' ? first.trim() : String(first);
+                const first = taskInstruction.find(v => v != null && String(v).trim() !== '');
+                return first != null ? String(first).trim() : '';
             }
         }
-        const subTasks = raw?.sub_tasks ?? rawData?.sub_tasks;
-        if (Array.isArray(subTasks) && subTasks.length > 0) {
-            const first = subTasks[0];
-            return typeof first === 'string' ? first.trim() : String(first);
-        }
         return '';
     }
 
     /**
-     * Build frame_range display string from frame_num and/or statistics.total_frames.
+     * Map frame_range directly from frame_range field.
      * @param {Object} raw - Top-level raw object
-     * @param {Object} rawData - raw.raw fallback
      * @returns {string}
      */
-    _mapFrameRange(raw, rawData) {
-        const explicit = raw?.frame_range ?? rawData?.frame_range;
+    _mapFrameRange(raw) {
+        const explicit = raw?.frame_range;
         if (explicit != null && String(explicit).trim() !== '') return String(explicit).trim();
-        const frameNum = raw?.frame_num ?? rawData?.frame_num;
-        if (frameNum != null && String(frameNum).trim() !== '') return String(frameNum).trim();
-        const stats = raw?.statistics ?? rawData?.statistics;
-        const totalFrames = stats?.total_frames;
-        if (totalFrames != null) return `0-${Number(totalFrames)}`;
         return '';
     }
 
     /**
-     * Map dataset_size: top-level dataset_size, else statistics.dataset_size, else "".
+     * Map dataset_size directly from dataset_size field.
      * @param {Object} raw - Top-level raw object
-     * @param {Object} rawData - raw.raw fallback
      * @returns {string|number}
      */
-    _mapDatasetSize(raw, rawData) {
-        const top = raw?.dataset_size ?? rawData?.dataset_size;
+    _mapDatasetSize(raw) {
+        const top = raw?.dataset_size;
         if (top != null && (typeof top === 'string' ? top.trim() !== '' : true)) return top;
-        const stats = raw?.statistics ?? rawData?.statistics;
-        const fromStats = stats?.dataset_size;
-        if (fromStats != null && (typeof fromStats === 'string' ? fromStats.trim() !== '' : true)) return fromStats;
         return '';
     }
 
@@ -249,17 +233,17 @@ export class DataManager {
     createDatasetObject(path, raw) {
         const rawData = raw.raw || {};
 
-        const originalName = path || raw.dataset_name || '';
+        const originalName = raw.dataset_name || path || '';
         const displayName = this.mapDatasetDisplayName(originalName);
 
-        const robotType = this._mapRobotType(raw, rawData);
-        const sceneTypeArr = this._mapSceneType(raw, rawData);
-        const tasksStr = this._mapTasks(raw, rawData);
-        const frameRangeStr = this._mapFrameRange(raw, rawData);
-        const datasetSizeVal = this._mapDatasetSize(raw, rawData);
+        const robotType = this._mapRobotType(raw);
+        const sceneTypeArr = this._mapSceneType(raw);
+        const tasksStr = this._mapTasks(raw);
+        const frameRangeStr = this._mapFrameRange(raw);
+        const datasetSizeVal = this._mapDatasetSize(raw);
 
         const endEffectors = (() => {
-            const source = raw.end_effector_type !== undefined ? raw.end_effector_type : rawData.end_effector_type;
+            const source = raw.end_effector_type;
             if (source === undefined || source === null) return [];
             const values = Array.isArray(source) ? source : [source];
             return values
@@ -267,7 +251,9 @@ export class DataManager {
                 .filter(value => value);
         })();
 
-        const statistics = raw.statistics || rawData.statistics || {};
+        const statistics = raw.statistics || {};
+        const atomicActions = Array.isArray(raw.atomic_actions) ? raw.atomic_actions : [];
+        const rawObjects = Array.isArray(raw.objects) ? raw.objects : [];
 
         return {
             path: path,
@@ -277,12 +263,10 @@ export class DataManager {
             thumbnail_url: `${this.config.paths.assetsRoot}/thumbnails/${path}.jpg`,
             description: tasksStr,
             scenes: sceneTypeArr,
-            actions: raw.atomic_actions?.length > 0 ? raw.atomic_actions : (rawData.atomic_actions || []),
+            actions: atomicActions,
+            atomic_actions: atomicActions,
             objects: (function() {
-                const topObjects = raw.objects || [];
-                const rawObjects = rawData.objects || [];
-                const objectsToUse = topObjects.length > 0 ? topObjects : rawObjects;
-                return objectsToUse.map(obj => ({
+                return rawObjects.map(obj => ({
                     name: obj.object_name,
                     hierarchy: [
                         obj.level1,
@@ -296,7 +280,7 @@ export class DataManager {
             robot: robotType || undefined,
             endEffector: endEffectors[0] || undefined,
             endEffectors,
-            platformHeight: raw.operation_platform_height !== undefined ? raw.operation_platform_height : rawData.operation_platform_height,
+            platformHeight: raw.operation_platform_height,
 
             frameRange: frameRangeStr || undefined,
             datasetSize: datasetSizeVal || undefined,
@@ -454,13 +438,13 @@ export class DataManager {
             this.datasets = Object.entries(allData).map(([path, raw]) => this.createDatasetObject(path, raw));
             
             loadingProgress.innerHTML = `
-                <div style="color: #4caf50; font-weight: 600;">✓ ${this.datasets.length} datasets loaded (YAML mode)</div>
+                <div style="color: #4caf50; font-weight: 600;">OK: ${this.datasets.length} datasets loaded (YAML mode)</div>
                 <div style="font-size: 11px; margin-top: 4px; color: #666;">Tip: Add consolidated JSON for faster loading next time</div>
             `;
             loadingBar.style.width = '100%';
             
-            console.log(`✓ Loaded ${this.datasets.length} datasets from YAML files`);
-            console.info('💡 Tip: Run scripts/opti_init.py to generate optimized files for faster loading');
+            console.log(`OK: Loaded ${this.datasets.length} datasets from YAML files`);
+            console.info('TIP: Run scripts/opti_init.py to generate optimized files for faster loading');
             
         } catch (err) {
             console.error('Failed to load datasets from YAML:', err);
@@ -490,7 +474,7 @@ export class DataManager {
         this.datasets.forEach(ds => {
             this.datasetMap.set(ds.path, ds);
         });
-        console.log('✓ Dataset index built:', this.datasetMap.size, 'items');
+        console.log('OK: Dataset index built:', this.datasetMap.size, 'items');
     }
     
     /**

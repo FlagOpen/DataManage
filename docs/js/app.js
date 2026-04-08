@@ -94,7 +94,7 @@ class Application {
                 loadingOverlay.classList.add('hidden');
             }, 300);
             
-            console.log('✓ Application initialized successfully');
+            console.log('OK: Application initialized successfully');
             
         } catch (err) {
             const userFriendlyMsg = 'Since the web resources are hosted on Hugging Face, your network connection may affect the loading of these resources. Please ensure you have a stable connection and refresh the page to try again.\n\n' +
