@@ -165,23 +165,25 @@ export class DataManager {
     }
 
     /**
-     * Map scene_type to page field (string[]), directly from scene_type field.
-     * If scene_type is object {level1..level5}, flatten non-empty levels for UI.
+     * Map scene_type to page field with hierarchy structure.
+     * If scene_type is object {level1..level5}, preserve hierarchy for UI filter.
      * @param {Object} raw - Top-level raw object
-     * @returns {string[]}
+     * @returns {Object} { hierarchy: string[] }
      */
     _mapSceneType(raw) {
         const src = raw?.scene_type;
-        if (src == null) return [];
-        if (Array.isArray(src)) return src.filter(v => v != null && String(v).trim() !== '').map(v => String(v).trim());
+        if (src == null) return { hierarchy: [] };
+        if (Array.isArray(src)) {
+            return { hierarchy: src.filter(v => v != null && String(v).trim() !== '').map(v => String(v).trim()) };
+        }
         if (typeof src === 'object' && !Array.isArray(src)) {
-            const arr = [src.level1, src.level2, src.level3, src.level4, src.level5]
+            const hierarchy = [src.level1, src.level2, src.level3, src.level4, src.level5]
                 .filter(v => v != null && String(v).trim() !== '')
                 .map(v => String(v).trim());
-            return arr;
+            return { hierarchy };
         }
-        if (typeof src === 'string' && src.trim() !== '') return [src.trim()];
-        return [];
+        if (typeof src === 'string' && src.trim() !== '') return { hierarchy: [src.trim()] };
+        return { hierarchy: [] };
     }
 
     /**
@@ -314,8 +316,8 @@ export class DataManager {
             structure: raw.structure || rawData.structure,
             tasks: tasksStr,
 
-            getAllScenes: function() { return this.scenes; },
-            hasScene: function(sceneType) { return this.scenes.includes(sceneType); },
+            getAllScenes: function() { return this.scenes?.hierarchy || []; },
+            hasScene: function(sceneType) { return (this.scenes?.hierarchy || []).includes(sceneType); },
             getObjectsByLevel: function(level, value) {
                 return this.objects.filter(obj => obj.hierarchy[level - 1] === value);
             },

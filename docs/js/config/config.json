@@ -1,5 +1,7 @@
 {
   "assets": {
+    "useLocalAssets": true,
+    "localAssetsPath": "../robocoin_datamanager_assets",
     "defaultRemoteAssetsRoot": "https://huggingface.co/datasets/RogersPyke/robocoin_datamanager_assets/resolve/main"
   },
   "downloadCommand": {

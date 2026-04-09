@@ -4,3 +4,6 @@ RoboCOIN_DataManager_assets/
 /md
 /logs
 /robocoin_datamanager_assets/
+
+/*.md
+/scripts/**

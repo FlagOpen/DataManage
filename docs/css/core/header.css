@@ -76,7 +76,7 @@
     pointer-events: none;
 }
 
-/* ==================== Header with Glass-Effect Version Badge ==================== */
+/* ==================== Header with Nav Buttons ==================== */
 .header-container {
     width: 100%;
     padding: 1rem 1.25rem;
@@ -95,7 +95,7 @@
 
 .header-title {
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+    font-family: var(--font-family-sans);
     font-size: clamp(0.875rem, 0.75rem + 0.5vw, 1.25rem);
     font-weight: 600;
     color: #ffffff;
@@ -104,35 +104,114 @@
     text-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.2);
 }
 
-/* Version Badge */
-.version-badge {
+.header-buttons {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: auto;
+}
+
+.nav-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     padding: 0.25rem 1rem;
     font-size: clamp(0.625rem, 0.5625rem + 0.25vw, 0.875rem);
     font-weight: 600;
+    font-family: var(--font-family-sans);
     color: #ffffff;
-    
-    background: rgba(255, 255, 255, 0.2);
-    
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: var(--color-primary);
+    border: 1px solid var(--color-primary-dark);
     border-radius: 2rem;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-    
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
     letter-spacing: 0.05em;
-    
     transition: all 0.15s ease;
-    cursor: default;
+    cursor: pointer;
     user-select: none;
 }
 
-.version-badge:hover {
-    background: rgba(255, 255, 255, 0.3);
-    border-color: rgba(255, 255, 255, 0.4);
+.nav-btn:hover {
+    background: var(--color-primary-hover);
+    border-color: var(--color-primary-deep);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
     transform: translateY(-1px);
+}
+
+/* ==================== Nav Dropdown ==================== */
+.nav-dropdown-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 23, 42, 0.5);
+    z-index: 1000;
+    display: none;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 4rem 2rem;
+    overflow-y: auto;
+}
+
+.nav-dropdown-overlay.active {
+    display: flex;
+}
+
+.nav-dropdown {
+    background: white;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-lg);
+    width: 100%;
+    max-width: min(600px, 90vw);
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.nav-dropdown-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.nav-dropdown-title {
+    margin: 0;
+    font-family: var(--font-family-sans);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+}
+
+.nav-dropdown-close {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 9999px;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-surface);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.25rem;
+    color: var(--color-text-muted);
+    transition: all 0.2s ease;
+}
+
+.nav-dropdown-close:hover {
+    border-color: var(--color-danger);
+    color: var(--color-danger);
+}
+
+.nav-dropdown-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+    color: var(--color-text-primary);
+    line-height: 1.6;
+    white-space: pre-wrap;
 }
 
 /* ==================== Responsive Header & Banner ==================== */
@@ -155,15 +234,10 @@
         gap: 0.5rem;
     }
     
-    .version-badge {
+    .nav-btn {
         padding: 0.2rem 0.75rem;
     }
 }
 
-/* Very small mobile (< 360px) */
-@media (max-width: 359px) {
-    .version-badge {
-        padding: 0.15rem 0.625rem;
-    }
-}
+/* ==================== Responsive Header & Banner ==================== */
 

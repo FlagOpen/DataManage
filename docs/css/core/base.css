@@ -44,6 +44,11 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+/* ==================== Global Button Font ==================== */
+button {
+    font-family: var(--font-family-sans);
+}
+
 /* ==================== Global Scrollbar Styles ==================== */
 ::-webkit-scrollbar {
     width: 0.5rem;

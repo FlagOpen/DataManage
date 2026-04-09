@@ -422,9 +422,10 @@ export class VideoGridManager {
             }
         }
 
-        if (ds.scenes && ds.scenes.length > 0) {
-            const more = ds.scenes.length > 1 ? `+${ds.scenes.length - 1}` : '';
-            tags.push(Templates.buildVideoTag(ds.scenes[0], more));
+        const sceneHierarchy = ds.scenes?.hierarchy || [];
+        if (sceneHierarchy.length > 0) {
+            const more = sceneHierarchy.length > 1 ? `+${sceneHierarchy.length - 1}` : '';
+            tags.push(Templates.buildVideoTag(sceneHierarchy[0], more));
         }
 
         // Robot information moved to hover overlay since it's already shown in title

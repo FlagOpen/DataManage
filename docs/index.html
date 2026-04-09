@@ -53,7 +53,32 @@
     <div class="header-container">
         <div class="header-content">
             <h1 class="header-title">RoboCOIN-DataManager</h1>
-            <span class="version-badge">v1.1</span>
+            <div class="header-buttons">
+                <button class="nav-btn" id="newsBtn">NEWS</button>
+                <button class="nav-btn" id="issuesBtn">ISSUES</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- News Dropdown -->
+    <div class="nav-dropdown-overlay" id="newsDropdownOverlay">
+        <div class="nav-dropdown" id="newsDropdown">
+            <div class="nav-dropdown-header">
+                <h3 class="nav-dropdown-title">News</h3>
+                <button class="nav-dropdown-close" id="newsDropdownClose">&times;</button>
+            </div>
+            <div class="nav-dropdown-content" id="newsContent">Loading...</div>
+        </div>
+    </div>
+
+    <!-- Issues Dropdown -->
+    <div class="nav-dropdown-overlay" id="issueDropdownOverlay">
+        <div class="nav-dropdown" id="issueDropdown">
+            <div class="nav-dropdown-header">
+                <h3 class="nav-dropdown-title">Issues</h3>
+                <button class="nav-dropdown-close" id="issueDropdownClose">&times;</button>
+            </div>
+            <div class="nav-dropdown-content" id="issueContent">Loading...</div>
         </div>
     </div>
 

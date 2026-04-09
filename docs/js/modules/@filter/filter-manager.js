@@ -373,7 +373,7 @@ export class FilterManager {
                 if (key === 'frame range') {
                     match = values.includes(ds.frameRange);
                 } else if (key === 'scene') {
-                    match = ds.scenes && ds.scenes.some(v => values.includes(v));
+                    match = ds.scenes?.hierarchy && ds.scenes.hierarchy.some(v => values.includes(v));
                 } else if (key === 'robot') {
                     const robots = Array.isArray(ds.robot) ? ds.robot : [ds.robot];
                     match = robots.some(r => values.includes(this.normalizeRobotId(r)));
@@ -653,7 +653,7 @@ export class FilterManager {
             if (filterKey === 'frame range') {
                 match = ds.frameRange === filterValue;
             } else if (filterKey === 'scene') {
-                match = ds.scenes && ds.scenes.includes(filterValue);
+                match = ds.scenes?.hierarchy && ds.scenes.hierarchy.includes(filterValue);
             } else if (filterKey === 'robot') {
                 const robots = Array.isArray(ds.robot) ? ds.robot : [ds.robot];
                 match = robots.some(r => this.normalizeRobotId(r) === filterValue);

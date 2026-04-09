@@ -42,8 +42,8 @@ export function buildFilterGroups(datasets, normalizeRobot) {
         },
         'scene': {
             title: 'scene',
-            values: new Set(),
-            type: 'flat'
+            values: new Map(),
+            type: 'hierarchical'
         },
         'robot': {
             title: 'robot',
@@ -72,8 +72,8 @@ export function buildFilterGroups(datasets, normalizeRobot) {
             groups['frame range'].values.add(ds.frameRange);
         }
 
-        if (ds.scenes) {
-            ds.scenes.forEach(scene => groups.scene.values.add(scene));
+        if (ds.scenes?.hierarchy) {
+            addToHierarchy(groups.scene.values, ds.scenes.hierarchy);
         }
         if (ds.robot) {
             const robots = Array.isArray(ds.robot) ? ds.robot : [ds.robot];
@@ -116,7 +116,7 @@ export function calculateAffectedCount(datasets, filterKey, filterValue, normali
         if (filterKey === 'frame range') {
             match = ds.frameRange === filterValue;
         } else if (filterKey === 'scene') {
-            match = ds.scenes && ds.scenes.includes(filterValue);
+            match = ds.scenes?.hierarchy && ds.scenes.hierarchy.includes(filterValue);
         } else if (filterKey === 'robot') {
             const robots = Array.isArray(ds.robot) ? ds.robot : [ds.robot];
             match = robots.some(r => normalizeRobotId(r, normalizeRobot) === filterValue);

@@ -211,6 +211,7 @@ class ConfigManager {
      * Determine the active assets root.
      * - Query string ?assets=... or ?assetsRoot=... overrides everything (仅接受 https?://)
      * - window.ROBOCOIN_ASSETS_ROOT / window.__ASSETS_ROOT__ works for manual overrides
+     * - If useLocalAssets is true in config.json, use localAssetsPath
      * - 默认指向托管在 Hugging Face 的远程数据集，确保所有环境都一致
      * @returns {string}
      */
@@ -238,6 +239,14 @@ class ConfigManager {
             }
 
             console.warn('[ConfigManager] Ignoring assets override because it is not an absolute http(s) URL.');
+        }
+
+        // Check if local assets should be used
+        const useLocalAssets = this.getJsonValue('assets.useLocalAssets', false);
+        if (useLocalAssets) {
+            const localPath = this.getJsonValue('assets.localAssetsPath', '../robocoin_datamanager_assets');
+            console.log('[ConfigManager] Using local assets path:', localPath);
+            return localPath;
         }
 
         return this.normalizeAssetsRoot(defaultRemote);
@@ -278,6 +287,11 @@ class ConfigManager {
 
         return {
             enableExclude: this.getJsonValue('defaults.enableExclude', true),
+            assets: {
+                useLocalAssets: this.getJsonValue('assets.useLocalAssets', false),
+                localAssetsPath: this.getJsonValue('assets.localAssetsPath', '../robocoin_datamanager_assets'),
+                defaultRemoteAssetsRoot: this.getJsonValue('assets.defaultRemoteAssetsRoot', 'https://huggingface.co/datasets/RogersPyke/robocoin_datamanager_assets/resolve/main')
+            },
             layout: {
                 contentPadding: getValue('--content-padding', 'defaults.layout.contentPadding', 12)
             },

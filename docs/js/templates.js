@@ -235,8 +235,9 @@ const Templates = {
             html += `<strong>End Effector:</strong> ${endEffectors.join(', ')}<br>`;
         }
 
-        if (ds.scenes && ds.scenes.length > 0) {
-            html += `<strong>Scene:</strong> ${ds.scenes.join(', ')}<br>`;
+        const sceneHierarchy = ds.scenes?.hierarchy || [];
+        if (sceneHierarchy.length > 0) {
+            html += `<strong>Scene:</strong> ${sceneHierarchy.join(' > ')}<br>`;
         }
 
         // if (ds.platformHeight !== undefined) {
@@ -355,8 +356,9 @@ const Templates = {
 
         const datasetDisplayName = this.getDatasetDisplayName(dataset);
         const originalNameLabel = this.buildDatasetOriginalLabel(dataset.name);
-        const sceneTypeText = Array.isArray(dataset.scenes) && dataset.scenes.length > 0
-            ? dataset.scenes.join(', ') : 'N/A';
+        const sceneHierarchy = dataset.scenes?.hierarchy || [];
+        const sceneTypeText = sceneHierarchy.length > 0
+            ? sceneHierarchy.join(' > ') : 'N/A';
         const atomicActionsText = Array.isArray(dataset.actions) && dataset.actions.length > 0
             ? dataset.actions.join(', ') : 'N/A';
         const totalFramesValue = dataset.statistics?.total_frames;
@@ -588,8 +590,9 @@ const Templates = {
      * Hover Preview Templates
      */
     buildHoverPreview(dataset) {
-        const sceneText = Array.isArray(dataset.scenes) && dataset.scenes.length > 0
-            ? dataset.scenes.slice(0, 2).join(', ') + (dataset.scenes.length > 2 ? '...' : '')
+        const sceneHierarchy = dataset.scenes?.hierarchy || [];
+        const sceneText = sceneHierarchy.length > 0
+            ? sceneHierarchy.slice(0, 2).join(' > ') + (sceneHierarchy.length > 2 ? '...' : '')
             : 'N/A';
 
         const actionText = Array.isArray(dataset.actions) && dataset.actions.length > 0

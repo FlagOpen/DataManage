@@ -15,6 +15,8 @@ import EventHandlers from './modules/event-handlers.js';
 import RobotAliasManager from './modules/robot-aliases.js';
 import ErrorNotifier from './modules/error-notifier.js';
 import DownloadManager from './modules/download-manager.js';
+import NewsMenu from './modules/news-menu.js';
+import IssueMenu from './modules/issue-menu.js';
 
 /**
  * Main Application Class
@@ -147,6 +149,10 @@ class Application {
             this.selectedDatasets,
             dataManager.datasetMap
         );
+
+        // News and Issue Menus
+        NewsMenu.init();
+        IssueMenu.init();
     }
     
     /**
