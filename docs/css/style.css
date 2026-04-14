@@ -11,6 +11,7 @@
 @import './core/base.css';
 @import './core/layout.css';
 @import './core/header.css';
+@import './core/download-stats.css';
 
 /* Feature modules */
 @import './filter/filter-control-bar.css';

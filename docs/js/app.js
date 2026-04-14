@@ -17,6 +17,7 @@ import ErrorNotifier from './modules/error-notifier.js';
 import DownloadManager from './modules/download-manager.js';
 import NewsMenu from './modules/news-menu.js';
 import IssueMenu from './modules/issue-menu.js';
+import DownloadStatsManager from './modules/download-stats.js';
 
 /**
  * Main Application Class
@@ -62,6 +63,11 @@ class Application {
             
             // Initialize configuration
             this.config = ConfigManager.getConfig();
+            
+            // Initialize download stats display (non-blocking)
+            DownloadStatsManager.init().catch(err => {
+                console.warn('[APP] Failed to load download stats:', err);
+            });
             
             // Load robot alias map (non-blocking for core data, but awaited before UI init)
             await RobotAliasManager.load(this.config);
