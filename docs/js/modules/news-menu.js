@@ -10,7 +10,10 @@ const NewsMenu = {
     overlay: null,
     dropdown: null,
     content: null,
+    langToggleBtn: null,
     isOpen: false,
+    currentLang: 'zh',
+    dataCache: null,
 
     get filePath() {
         const config = ConfigManager.getConfig();
@@ -21,12 +24,18 @@ const NewsMenu = {
         this.overlay = document.getElementById('newsDropdownOverlay');
         this.dropdown = document.getElementById('newsDropdown');
         this.content = document.getElementById('newsContent');
+        this.langToggleBtn = document.getElementById('newsLangToggleBtn');
+        this.currentLang = this.resolveInitialLanguage();
+        this.updateLangToggleButtonLabel();
         
         document.getElementById('newsBtn').addEventListener('click', () => this.toggle());
         document.getElementById('newsDropdownClose').addEventListener('click', () => this.close());
         this.overlay.addEventListener('click', (e) => {
             if (e.target === this.overlay) this.close();
         });
+        if (this.langToggleBtn) {
+            this.langToggleBtn.addEventListener('click', () => this.toggleLanguage());
+        }
     },
 
     async toggle() {
@@ -56,11 +65,48 @@ const NewsMenu = {
                 throw new Error(`YAML not found: ${this.filePath}`);
             }
             const text = await response.text();
-            const data = await this.parseYaml(text);
-            this.renderItems(data?.items || []);
+            this.dataCache = await this.parseYaml(text);
+            this.renderItems(this.dataCache?.items || []);
         } catch (error) {
             this.content.textContent = `YAML load failed: ${error?.message || 'unknown error'}`;
         }
+    },
+
+    resolveInitialLanguage() {
+        const params = new URLSearchParams(window.location.search || '');
+        const lang = (params.get('lang') || '').toLowerCase();
+        return lang === 'en' ? 'en' : 'zh';
+    },
+
+    toggleLanguage() {
+        this.currentLang = this.currentLang === 'zh' ? 'en' : 'zh';
+        this.updateLangToggleButtonLabel();
+        if (this.isOpen && this.dataCache) {
+            try {
+                this.renderItems(this.dataCache?.items || []);
+            } catch (error) {
+                this.content.textContent = `YAML load failed: ${error?.message || 'unknown error'}`;
+            }
+        }
+    },
+
+    updateLangToggleButtonLabel() {
+        if (!this.langToggleBtn) return;
+        this.langToggleBtn.textContent = this.currentLang === 'zh' ? 'ZH' : 'EN';
+    },
+
+    getLocalizedField(item, fieldName) {
+        const value = item?.[fieldName];
+        if (!value || typeof value !== 'object') {
+            const itemId = item?.id || 'unknown';
+            throw new Error(`Missing i18n object: ${fieldName}, item=${itemId}`);
+        }
+        const localized = value[this.currentLang];
+        if (!localized || typeof localized !== 'string') {
+            const itemId = item?.id || 'unknown';
+            throw new Error(`Missing ${this.currentLang} translation: ${fieldName}, item=${itemId}`);
+        }
+        return localized;
     },
 
     async parseYaml(text) {
@@ -96,11 +142,11 @@ const NewsMenu = {
         }
 
         const html = items.map((item) => {
-            const title = this.escapeHtml(item?.title || 'Untitled');
+            const title = this.escapeHtml(this.getLocalizedField(item, 'title'));
             const date = this.escapeHtml(item?.date || '');
             const status = this.escapeHtml(item?.status || '');
             const committedBy = this.escapeHtml(item?.committed_by || '');
-            const content = this.escapeHtml(item?.content || '');
+            const content = this.escapeHtml(this.getLocalizedField(item, 'content'));
             return [
                 '<article style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.08);">',
                 `<h4 style="margin: 0 0 6px 0; font-size: 14px;">${title}</h4>`,
