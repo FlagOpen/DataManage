@@ -3,43 +3,41 @@
  * Application header, global banner, and version badge styles
  */
 
-/* ==================== Global Top Banner ==================== */
-.global-banner {
-    width: 100%;
-    padding: 0.6rem 1.5rem;
-    background: #fef3c7;
-    /* Amber 100 */
-    border-bottom: 1px solid #facc15;
-    /* Amber 400 */
-    color: #92400e;
-    /* Amber 900 */
-    font-family: var(--font-family-sans);
-    font-size: 0.8125rem;
-    line-height: 1.4;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1100;
-    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.2);
-    transform: translateY(0);
+/* ==================== Global Top Banner / Hint Popup ==================== */
+.global-banner-overlay {
+    z-index: 1200;
+    padding: 4rem 2rem;
     opacity: 1;
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    visibility: visible;
+    pointer-events: auto;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
 }
 
-.global-banner-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-    text-align: center;
+.global-banner-overlay-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
 }
 
-.global-banner-icon {
-    font-size: 0.95rem;
+.global-banner.nav-dropdown {
+    width: fit-content;
+    max-width: min(600px, 90vw);
+    max-height: 80vh;
+    background: #ffffff;
+    border: 1px solid var(--color-border);
+    color: var(--color-text-primary);
+    box-shadow: var(--shadow-lg);
+}
+
+.global-banner.nav-dropdown .global-banner-content {
+    color: var(--color-text-primary);
+    font-size: 0.875rem;
+    line-height: 1.6;
+    text-align: left;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    padding: 0.75rem 1rem;
 }
 
 .global-banner-label {
@@ -51,29 +49,64 @@
 
 .global-banner-text {
     font-weight: 400;
+    margin: 0;
+}
+
+.global-banner.nav-dropdown .global-banner-title {
+    color: var(--color-text-primary);
+}
+
+.global-banner.nav-dropdown .global-banner-header {
+    border-bottom-color: var(--color-border);
 }
 
 .global-banner-important {
     color: #dc2626 !important; /* Red 600 */
-    font-size: 0.875rem !important;
+    font-size: 0.8125rem !important;
     font-weight: 700 !important;
     background: rgba(220, 38, 38, 0.08) !important; /* Light red background */
-    padding: 0.25rem 0.5rem !important;
+    padding: 0.625rem 0.75rem !important;
     border-radius: 0.25rem !important;
     border: 1px solid rgba(220, 38, 38, 0.2) !important;
     box-shadow: 0 1px 2px rgba(220, 38, 38, 0.1) !important;
+    margin: 0.25rem 0 0.75rem 0;
 }
 
-.global-banner-warning {
-    background: #fef3c7;
-    border-bottom-color: #facc15;
-    color: #92400e;
+.global-banner-important strong {
+    display: block;
+    margin-bottom: 0.4rem;
 }
 
-.global-banner-hidden {
-    opacity: 0;
-    transform: translateY(-100%);
-    pointer-events: none;
+.global-banner-steps {
+    margin: 0;
+    padding-left: 1.2rem;
+}
+
+.global-banner-steps li {
+    margin: 0.15rem 0;
+}
+
+.global-banner-note {
+    margin: 0.5rem 0 0 0;
+    color: #7f1d1d;
+}
+
+.global-banner-help {
+    margin-bottom: 0;
+    font-weight: 600;
+}
+
+.global-banner.nav-dropdown.global-banner-warning {
+    background: #ffffff;
+    border-color: var(--color-border);
+    color: var(--color-text-primary);
+}
+
+.global-banner code {
+    background: rgba(15, 23, 42, 0.08);
+    color: var(--color-text-primary);
+    padding: 0.1rem 0.3rem;
+    border-radius: 4px;
 }
 
 /* ==================== Header with Nav Buttons ==================== */
@@ -218,12 +251,16 @@
 
 /* Mobile (< 600px) */
 @media (max-width: 599px) {
-    .global-banner {
-        padding: 0.5rem 0.75rem;
+    .global-banner-overlay {
+        padding: 1rem 0.75rem;
     }
 
-    .global-banner-content {
-        gap: 0.35rem;
+    .global-banner.nav-dropdown {
+        max-width: min(600px, 90vw);
+    }
+
+    .global-banner.nav-dropdown .global-banner-content {
+        font-size: 0.8125rem;
     }
 
     .header-container {

@@ -18,7 +18,7 @@
           ├── thumbnails/         - Thumbnail images (*.jpg, provided by assets/thumbnails)
           └── videos/             - MP4 video files (*.mp4)
     -->
-    <link rel="stylesheet" href="./css/style.css?v=20260415-213500">
+    <link rel="stylesheet" href="./css/style.css?v=20260415-214900">
 
     <link rel="icon" href="./favicon.ico" type="image/x-icon">
 
@@ -27,17 +27,23 @@
 </head>
 
 <body>
-    <div class="global-banner global-banner-warning" id="globalBanner">
-        <div class="global-banner-content">
-            <span class="global-banner-text">
-                RoboCOIN is available at 
-                <a href="https://github.com/FlagOpen/RoboCOIN" target="_blank" rel="noopener noreferrer">github.com/FlagOpen/RoboCOIN</a>. 
-                To get started, please install the Python package with <code>pip install robocoin</code>.<br>
-                <strong>>>>>> HELP US IMPROVE ROBOCOIN! <<<<<</strong><br>
-                <strong class="global-banner-important">Before downloading datasets, visit <a href="https://huggingface.co/RoboCOIN" target="_blank" rel="noopener noreferrer">huggingface.co/RoboCOIN</a>, click any dataset to apply for download access (required to avoid permission errors).</strong><br>
-                Your application will be auto-approved after submission. Thank you for your support!
-                <span class="global-banner-icon" aria-hidden="true">🙏</span>
-            </span>
+    <div class="global-banner-overlay nav-dropdown-overlay active" id="globalBannerOverlay">
+        <div class="global-banner nav-dropdown global-banner-warning" id="globalBanner" role="dialog" aria-modal="true" aria-label="RoboCOIN Hint Menu">
+            <div class="nav-dropdown-header global-banner-header">
+                <h3 class="nav-dropdown-title global-banner-title">Hint</h3>
+            </div>
+            <div class="nav-dropdown-content global-banner-content">
+                <p class="global-banner-text">
+                    RoboCOIN source code is available at
+                    <a href="https://github.com/FlagOpen/RoboCOIN" target="_blank" rel="noopener noreferrer">github.com/FlagOpen/RoboCOIN</a>.
+                    Install the Python package first with <code>pip install robocoin</code>.
+                    Before downloading datasets, visit
+                    <a href="https://huggingface.co/RoboCOIN" target="_blank" rel="noopener noreferrer">huggingface.co/RoboCOIN</a>,
+                    open any dataset page, and submit the access request to avoid permission errors.
+                    Access requests are auto-approved after submission.
+                    Help us improve RoboCOIN by reporting issues and feedback.
+                </p>
+            </div>
         </div>
     </div>
 
@@ -56,7 +62,8 @@
             <div class="header-downloads" id="headerDownloads" style="display: none;">
                 <span class="header-downloads-text">
                     RoboCOIN now has <strong class="header-downloads-count" id="hfDownloadsCount" style="font-size: 1.15em; color: #ffd166;">0</strong> downloads on 
-                    <a href="https://huggingface.co/RoboCOIN" target="_blank" rel="noopener noreferrer">Huggingface</a> and 
+                    <a href="https://huggingface.co/RoboCOIN" target="_blank" rel="noopener noreferrer">Huggingface</a><br>
+                    and 
                     <strong class="header-downloads-count" id="msDownloadsCount" style="font-size: 1.15em; color: #ffd166;">0</strong> downloads on 
                     <a href="https://modelscope.cn/organization/RoboCOIN" target="_blank" rel="noopener noreferrer">Modelscope</a>
                     (<strong class="header-downloads-count" id="totalDownloadsCount" style="font-size: 1.15em; color: #ffd166;">0</strong> in total)!
@@ -229,45 +236,36 @@
     <script>
         (function () {
             var banner = document.getElementById('globalBanner');
-            if (!banner) return;
+            var overlay = document.getElementById('globalBannerOverlay');
+            if (!banner || !overlay) return;
 
-            var hiddenClass = 'global-banner-hidden';
+            var hiddenClass = 'global-banner-overlay-hidden';
             var hasHidden = false;
 
             function hideBanner() {
                 if (hasHidden) return;
                 hasHidden = true;
-                banner.classList.add(hiddenClass);
+                overlay.classList.add(hiddenClass);
                 removeListeners();
             }
 
             function interactionHandler(event) {
-                // Ignore interactions that originate from inside the banner itself
                 if (banner.contains(event.target)) {
                     return;
                 }
                 hideBanner();
             }
 
-            function keydownHandler(event) {
-                // Any key press counts as interaction
-                hideBanner();
-            }
-
             function addListeners() {
                 window.addEventListener('click', interactionHandler, { capture: true });
                 window.addEventListener('pointerdown', interactionHandler, { capture: true });
-                window.addEventListener('wheel', interactionHandler, { capture: true, passive: true });
                 window.addEventListener('touchstart', interactionHandler, { capture: true, passive: true });
-                window.addEventListener('keydown', keydownHandler, { capture: true });
             }
 
             function removeListeners() {
                 window.removeEventListener('click', interactionHandler, { capture: true });
                 window.removeEventListener('pointerdown', interactionHandler, { capture: true });
-                window.removeEventListener('wheel', interactionHandler, { capture: true, passive: true });
                 window.removeEventListener('touchstart', interactionHandler, { capture: true, passive: true });
-                window.removeEventListener('keydown', keydownHandler, { capture: true });
             }
 
             if (document.readyState === 'loading') {
