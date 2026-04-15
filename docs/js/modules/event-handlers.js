@@ -9,6 +9,7 @@ import ConfigManager from './config.js';
 import { debounce } from './virtual-scroll.js';
 import { selectAllChildrenInHierarchy, clearAllChildrenInHierarchy } from './@filter/filter-hierarchy.js';
 import DownloadManager from './download-manager.js';
+import { bindCloseButton } from './dropdown-close.js';
 
 /**
  * Event Handlers Manager Class
@@ -97,7 +98,6 @@ export class EventHandlers {
         // Filter dropdown events
         const filterTriggerBtn = document.getElementById('filterTriggerBtn');
         const filterDropdownClose = document.getElementById('filterDropdownClose');
-        const filterDropdownOverlay = document.getElementById('filterDropdownOverlay');
 
         if (filterTriggerBtn) {
             filterTriggerBtn.addEventListener('click', () => {
@@ -115,27 +115,13 @@ export class EventHandlers {
         }
 
         if (filterDropdownClose) {
-            filterDropdownClose.addEventListener('click', () => {
+            bindCloseButton(filterDropdownClose, () => {
                 this.managers.ui.closeFilterDropdown();
                 // Clear search when closing
                 const searchInput = document.getElementById('filterFinderInput');
                 if (searchInput) {
                     searchInput.value = '';
                     this.managers.filter.clearFilterSearch();
-                }
-            });
-        }
-
-        if (filterDropdownOverlay) {
-            filterDropdownOverlay.addEventListener('click', (e) => {
-                if (e.target.id === 'filterDropdownOverlay') {
-                    this.managers.ui.closeFilterDropdown();
-                    // Clear search when closing
-                    const searchInput = document.getElementById('filterFinderInput');
-                    if (searchInput) {
-                        searchInput.value = '';
-                        this.managers.filter.clearFilterSearch();
-                    }
                 }
             });
         }

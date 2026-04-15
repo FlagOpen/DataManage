@@ -31,6 +31,7 @@
         <div class="global-banner nav-dropdown global-banner-warning" id="globalBanner" role="dialog" aria-modal="true" aria-label="RoboCOIN Hint Menu">
             <div class="nav-dropdown-header global-banner-header">
                 <h3 class="nav-dropdown-title global-banner-title">Hint</h3>
+                <button class="nav-dropdown-close" id="hintDropdownClose">&times;</button>
             </div>
             <div class="nav-dropdown-content global-banner-content">
                 <p class="global-banner-text">
@@ -149,12 +150,8 @@
             <div class="filter-dropdown-header">
                 <div class="filter-dropdown-header-main">
                     <h3 class="filter-dropdown-title">Filter Datasets</h3>
-                    <button class="filter-reset-icon" id="filterResetBtn" title="Reset filters" aria-label="Reset filters">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="3 6 5 6 21 6"></polyline>
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                        </svg>
-                    </button>
+                    <button class="filter-dropdown-done" id="filterResetBtn">Reset Filters</button>
+                    <button class="nav-dropdown-close" id="filterDropdownClose" title="Close filter menu" aria-label="Close filter menu">&times;</button>
                 </div>
                 <div class="filter-finder">
                     <input type="text" id="filterFinderInput" class="filter-finder-input"
@@ -177,9 +174,6 @@
             <div class="filter-dropdown-content">
                 <div class="filter-categories-sidebar" id="filterCategoriesSidebar"></div>
                 <div class="filter-options-content" id="filterGroups"></div>
-            </div>
-            <div class="filter-dropdown-footer">
-                <button class="filter-dropdown-done" id="filterDropdownClose">Done</button>
             </div>
         </div>
     </div>
@@ -233,48 +227,6 @@
     <!-- Debug utilities for high DPI display optimization -->
     <!-- <script src="./js/debug.js?v=20251124-200355"></script> -->
     <script type="module" src="./js/main.js?v=20260415-213500"></script>
-    <script>
-        (function () {
-            var banner = document.getElementById('globalBanner');
-            var overlay = document.getElementById('globalBannerOverlay');
-            if (!banner || !overlay) return;
-
-            var hiddenClass = 'global-banner-overlay-hidden';
-            var hasHidden = false;
-
-            function hideBanner() {
-                if (hasHidden) return;
-                hasHidden = true;
-                overlay.classList.add(hiddenClass);
-                removeListeners();
-            }
-
-            function interactionHandler(event) {
-                if (banner.contains(event.target)) {
-                    return;
-                }
-                hideBanner();
-            }
-
-            function addListeners() {
-                window.addEventListener('click', interactionHandler, { capture: true });
-                window.addEventListener('pointerdown', interactionHandler, { capture: true });
-                window.addEventListener('touchstart', interactionHandler, { capture: true, passive: true });
-            }
-
-            function removeListeners() {
-                window.removeEventListener('click', interactionHandler, { capture: true });
-                window.removeEventListener('pointerdown', interactionHandler, { capture: true });
-                window.removeEventListener('touchstart', interactionHandler, { capture: true, passive: true });
-            }
-
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', addListeners);
-            } else {
-                addListeners();
-            }
-        })();
-    </script>
     <script>
         (function () {
             var STORAGE_KEY = 'robocoin-docs-etag';

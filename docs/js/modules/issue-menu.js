@@ -5,6 +5,7 @@
  */
 
 import ConfigManager from './config.js';
+import { bindCloseButton } from './dropdown-close.js';
 
 const IssueMenu = {
     overlay: null,
@@ -29,10 +30,7 @@ const IssueMenu = {
         this.updateLangToggleButtonLabel();
         
         document.getElementById('issuesBtn').addEventListener('click', () => this.toggle());
-        document.getElementById('issueDropdownClose').addEventListener('click', () => this.close());
-        this.overlay.addEventListener('click', (e) => {
-            if (e.target === this.overlay) this.close();
-        });
+        bindCloseButton(document.getElementById('issueDropdownClose'), () => this.close());
         if (this.langToggleBtn) {
             this.langToggleBtn.addEventListener('click', () => this.toggleLanguage());
         }

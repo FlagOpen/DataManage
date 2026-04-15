@@ -17,6 +17,7 @@ import ErrorNotifier from './modules/error-notifier.js';
 import DownloadManager from './modules/download-manager.js';
 import NewsMenu from './modules/news-menu.js';
 import IssueMenu from './modules/issue-menu.js';
+import HintMenu from './modules/hint-menu.js';
 import DownloadStatsManager from './modules/download-stats.js';
 
 /**
@@ -159,6 +160,7 @@ class Application {
         // News and Issue Menus
         NewsMenu.init();
         IssueMenu.init();
+        HintMenu.init();
     }
     
     /**
