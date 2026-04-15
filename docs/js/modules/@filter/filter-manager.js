@@ -61,6 +61,9 @@ export class FilterManager {
 
         // Static count cache for UI display (only calculated once at initialization)
         this.staticFilterCounts = new Map();
+        
+        // Runtime count cache used by initializeFilters/updateFilterCounts
+        this.filterCounts = new Map();
 
         /**
          * Robot alias manager (optional)

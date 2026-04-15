@@ -1,6 +1,6 @@
 /**
  * @file News Menu Module
- * @description Fetch and display News.md content in dropdown
+ * @description Fetch and display news YAML content in dropdown
  * @scenario: User clicks NEWS button to toggle news dropdown menu
  */
 
@@ -14,10 +14,7 @@ const NewsMenu = {
 
     get filePath() {
         const config = ConfigManager.getConfig();
-        if (config.assets.useLocalAssets) {
-            return config.assets.localAssetsPath + '/News.md';
-        }
-        return config.assets.defaultRemoteAssetsRoot + '/News.md';
+        return `${config.paths.assetsRoot}/news/news.yaml`;
     },
 
     init() {
@@ -56,13 +53,64 @@ const NewsMenu = {
         try {
             const response = await fetch(this.filePath);
             if (!response.ok) {
-                throw new Error('File not found');
+                throw new Error(`YAML not found: ${this.filePath}`);
             }
             const text = await response.text();
-            this.content.textContent = text || 'No content available.';
+            const data = await this.parseYaml(text);
+            this.renderItems(data?.items || []);
         } catch (error) {
-            this.content.textContent = 'Missing assets, not able to display.';
+            this.content.textContent = `YAML load failed: ${error?.message || 'unknown error'}`;
         }
+    },
+
+    async parseYaml(text) {
+        if (typeof jsyaml === 'undefined') {
+            await this.loadJsYamlLibrary();
+        }
+        return jsyaml.load(text);
+    },
+
+    async loadJsYamlLibrary() {
+        return new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js';
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+        });
+    },
+
+    escapeHtml(raw) {
+        return String(raw ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    },
+
+    renderItems(items) {
+        if (!Array.isArray(items) || items.length === 0) {
+            this.content.textContent = 'No news available.';
+            return;
+        }
+
+        const html = items.map((item) => {
+            const title = this.escapeHtml(item?.title || 'Untitled');
+            const date = this.escapeHtml(item?.date || '');
+            const status = this.escapeHtml(item?.status || '');
+            const committedBy = this.escapeHtml(item?.committed_by || '');
+            const content = this.escapeHtml(item?.content || '');
+            return [
+                '<article style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.08);">',
+                `<h4 style="margin: 0 0 6px 0; font-size: 14px;">${title}</h4>`,
+                `<div style="opacity: 0.75; font-size: 12px; margin-bottom: 6px;">${date}${status ? ` | ${status}` : ''}${committedBy ? ` | ${committedBy}` : ''}</div>`,
+                `<div style="white-space: pre-wrap; line-height: 1.5; font-size: 13px;">${content}</div>`,
+                '</article>'
+            ].join('');
+        }).join('');
+
+        this.content.innerHTML = html;
     }
 };
 

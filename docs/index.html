@@ -18,7 +18,7 @@
           ├── thumbnails/         - Thumbnail images (*.jpg, provided by assets/thumbnails)
           └── videos/             - MP4 video files (*.mp4)
     -->
-    <link rel="stylesheet" href="./css/style.css?v=20251124-200355">
+    <link rel="stylesheet" href="./css/style.css?v=20260415-210200">
 
     <link rel="icon" href="./favicon.ico" type="image/x-icon">
 
@@ -55,10 +55,11 @@
             <h1 class="header-title">RoboCOIN-DataManager</h1>
             <div class="header-downloads" id="headerDownloads" style="display: none;">
                 <span class="header-downloads-text">
-                    RoboCOIN now has <strong class="header-downloads-count" id="hfDownloadsCount">0</strong> downloads on 
+                    RoboCOIN now has <strong class="header-downloads-count" id="hfDownloadsCount" style="font-size: 1.15em; color: #ffd166;">0</strong> downloads on 
                     <a href="https://huggingface.co/RoboCOIN" target="_blank" rel="noopener noreferrer">Huggingface</a> and 
-                    <strong class="header-downloads-count" id="msDownloadsCount">0</strong> downloads on 
-                    <a href="https://modelscope.cn/organization/RoboCOIN" target="_blank" rel="noopener noreferrer">Modelscope</a>!
+                    <strong class="header-downloads-count" id="msDownloadsCount" style="font-size: 1.15em; color: #ffd166;">0</strong> downloads on 
+                    <a href="https://modelscope.cn/organization/RoboCOIN" target="_blank" rel="noopener noreferrer">Modelscope</a>
+                    (<strong class="header-downloads-count" id="totalDownloadsCount" style="font-size: 1.15em; color: #ffd166;">0</strong> in total)!
                 </span>
             </div>
             <div class="header-buttons">
@@ -222,7 +223,7 @@
 
     <!-- Debug utilities for high DPI display optimization -->
     <!-- <script src="./js/debug.js?v=20251124-200355"></script> -->
-    <script type="module" src="./js/main.js?v=20251124-200355"></script>
+    <script type="module" src="./js/main.js?v=20260415-210200"></script>
     <script>
         (function () {
             var banner = document.getElementById('globalBanner');

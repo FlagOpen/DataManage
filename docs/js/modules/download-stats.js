@@ -82,8 +82,9 @@ class DownloadStatsManager {
         const container = document.getElementById('headerDownloads');
         const hfCountEl = document.getElementById('hfDownloadsCount');
         const msCountEl = document.getElementById('msDownloadsCount');
+        const totalCountEl = document.getElementById('totalDownloadsCount');
 
-        if (!container || !hfCountEl || !msCountEl) {
+        if (!container || !hfCountEl || !msCountEl || !totalCountEl) {
             console.warn('[DownloadStats] Required DOM elements not found');
             return;
         }
@@ -97,6 +98,7 @@ class DownloadStatsManager {
 
         hfCountEl.textContent = this.formatNumber(stats.hfDownloads);
         msCountEl.textContent = this.formatNumber(stats.msDownloads);
+        totalCountEl.textContent = this.formatNumber(stats.hfDownloads + stats.msDownloads);
         container.style.display = 'flex';
     }
 }
