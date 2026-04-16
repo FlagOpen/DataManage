@@ -13,7 +13,7 @@ const IssueMenu = {
     content: null,
     langToggleBtn: null,
     isOpen: false,
-    currentLang: 'zh',
+    currentLang: 'en',
     dataCache: null,
 
     get filePath() {
@@ -73,11 +73,11 @@ const IssueMenu = {
     resolveInitialLanguage() {
         const params = new URLSearchParams(window.location.search || '');
         const lang = (params.get('lang') || '').toLowerCase();
-        return lang === 'en' ? 'en' : 'zh';
+        return lang === 'zh' ? 'zh' : 'en';
     },
 
     toggleLanguage() {
-        this.currentLang = this.currentLang === 'zh' ? 'en' : 'zh';
+        this.currentLang = this.currentLang === 'en' ? 'zh' : 'en';
         this.updateLangToggleButtonLabel();
         if (this.isOpen && this.dataCache) {
             try {
