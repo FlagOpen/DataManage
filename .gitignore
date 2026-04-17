@@ -7,3 +7,5 @@ RoboCOIN_DataManager_assets/
 
 /*.md
 /scripts/**
+
+/.vscode/**
