@@ -2,19 +2,19 @@
 
 .selection-panel {
     width: var(--selection-panel-width);
-    background: white;
+    background: var(--color-white);
     border-left: 1px solid var(--color-border);
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.02);
+    box-shadow: -4px 0 24px var(--color-black-02);
     z-index: 100;
 }
 
 .selection-panel-header {
     padding: 0.5rem 1.5rem;
     border-bottom: 1px solid var(--color-border);
-    background: white;
+    background: var(--color-white);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -54,8 +54,8 @@
 
 .btn-clear-selection:active {
     background: var(--color-danger);
-    color: white;
-    border-color: #991b1b;
+    color: var(--color-white);
+    border-color: var(--color-red-800);
     transform: translateY(0);
     box-shadow: none;
 }
@@ -81,7 +81,7 @@
     max-width: 100%;
     padding: 0.5rem 1rem;
     border: 1px solid var(--color-border);
-    background: rgb(255, 255, 255);
+    background: var(--color-white);
     border-radius: 9999px;
     cursor: pointer;
     font-size: 0.875rem;
@@ -110,7 +110,7 @@
 /* Primary Action Button (Copy) */
 #copyCodeBtn {
     background: var(--color-primary);
-    color: white;
+    color: var(--color-white);
     border: 1px solid var(--color-primary);
     box-shadow: var(--shadow-md);
     font-weight: 600;

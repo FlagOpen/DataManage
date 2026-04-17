@@ -5,14 +5,11 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(15, 23, 42, 0.5);
-    /* No blur for performance */
+    background: var(--color-overlay-dark);
     z-index: 1000;
     display: none;
     opacity: 0;
-    /* No transition to avoid animation */
     will-change: opacity;
-    /* GPU acceleration hint */
 }
 
 .filter-dropdown-overlay.active {
@@ -30,8 +27,9 @@
 }
 
 .filter-dropdown {
-    background: white;
+    background: var(--color-white);
     border-radius: var(--border-radius-lg);
+    border: 2px solid var(--color-border);
     box-shadow: var(--shadow-lg);
     width: 100%;
     max-width: min(900px, 90vw);
@@ -39,13 +37,8 @@
     display: flex;
     flex-direction: column;
     transform: scale(0.95) translateZ(0);
-    /* translateZ for GPU acceleration */
-    /* transition removed for performance */
-    /* Faster transition */
     will-change: transform;
-    /* GPU acceleration hint */
     contain: layout style;
-    /* Limit repaints to this element */
 }
 
 .filter-dropdown-overlay.show .filter-dropdown {
@@ -57,9 +50,28 @@
     flex-direction: column;
     gap: 1rem;
     padding: 1.5rem 2rem;
-    background: white;
-    border-bottom: 1px solid var(--color-border);
+    background: var(--color-white);
+    border-bottom: 2px solid var(--color-border);
     border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+}
+
+/* Override close button style for white background filter dropdown */
+.filter-dropdown-header .nav-dropdown-close {
+    border: 1px solid var(--color-gray-400);
+    background: var(--color-bg-surface);
+    color: var(--color-text-secondary);
+}
+
+.filter-dropdown-header .nav-dropdown-close:hover {
+    border-color: var(--color-danger);
+    background: #fef2f2;
+    color: var(--color-danger);
+}
+
+.filter-dropdown-header .nav-dropdown-close:active {
+    background: var(--color-danger);
+    color: var(--color-white);
+    border-color: var(--color-red-700);
 }
 
 .filter-dropdown-header-main {
@@ -95,8 +107,8 @@
 
 .filter-reset-icon:active {
     background: var(--color-danger);
-    color: white;
-    border-color: #991b1b;
+    color: var(--color-white);
+    border-color: var(--color-red-800);
     transform: translateY(0);
     box-shadow: none;
 }
@@ -134,7 +146,7 @@
     min-width: 12.5rem;
     overflow-y: auto;
     padding: 1rem;
-    border-right: 1px solid var(--color-border);
+    border-right: 2px solid var(--color-border);
     background: var(--color-bg-surface);
     border-bottom-left-radius: var(--border-radius-lg);
 }
@@ -158,7 +170,7 @@
     padding: 0.75rem 1rem;
     margin-bottom: 0.5rem;
     border-radius: 9999px;
-    background: white;
+    background: var(--color-white);
     border: 1px solid var(--color-border);
     cursor: pointer;
     transition: all 0.2s ease;
@@ -196,7 +208,7 @@
 
 .filter-category-btn.selected .category-count {
     background: var(--color-primary-dark);
-    color: white;
+    color: var(--color-white);
 }
 
 /* Options Placeholder */
@@ -213,7 +225,7 @@
 
 .filter-dropdown-footer {
     padding: 1.5rem 2rem;
-    border-top: 1px solid var(--color-border);
+    border-top: 2px solid var(--color-border);
     display: flex;
     justify-content: flex-end;
     background: var(--color-bg-surface);
@@ -224,7 +236,7 @@
     height: 2rem;
     padding: 0 0.875rem;
     background: var(--color-primary);
-    color: white;
+    color: var(--color-white);
     border: none;
     border-radius: 9999px;
     font-weight: 600;

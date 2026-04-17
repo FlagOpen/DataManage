@@ -84,11 +84,28 @@
     --border-radius-pill: 9999px;
 
     /* ==================== Color Palette ==================== */
-    /* Primary Gradient */
+    /* Primary Colors */
     --color-primary: #4f46e5;
     /* Indigo 600 */
     --color-primary-hover: #4338ca;
     /* Indigo 700 */
+    --color-primary-light: #3995ff;
+    --color-primary-dark: #49009d;
+    --color-primary-deep: #2563eb;
+
+    /* Blue Palette (for dropdowns, buttons) */
+    --color-blue-400: #60a5fa;
+    --color-blue-500: #3b82f6;
+    --color-blue-600: #2563eb;
+    --color-blue-700: #1d4ed8;
+    --color-blue-800: #1e40af;
+
+    /* Link Colors */
+    --color-link: #0969da;
+    --color-link-hover: #007bff;
+    --color-link-active: #0056b3;
+
+    /* Accent */
     --color-accent: #8b5cf6;
     /* Violet 500 */
     --color-accent-gradient: linear-gradient(135deg,
@@ -134,46 +151,89 @@
     rgba(252, 231, 0, 0.1) 60%,
     rgba(255, 255, 0, 0.1) 100%);
 
-    --color-primary-light: #3995ff;
-    --color-primary-dark: #49009d;
-    --color-primary-deep: #2563eb;
-
     /* Cart Item Colors */
-    --color-cart-tag-text: #2563eb;
+    --color-cart-tag-text: var(--color-blue-600);
     --color-cart-tag-bg: linear-gradient(135deg, rgba(255, 214, 102, 0.18) 0%, rgba(255, 179, 71, 0.15) 100%);
     --color-cart-tag-border: rgba(255, 179, 71, 0.35);
 
-    
-    /* Backgrounds */
-    --color-bg-body: #ffffff;
-    /* Pure white */
+    /* ==================== White & Transparent ==================== */
+    --color-white: #ffffff;
+    --color-white-90: rgba(255, 255, 255, 0.9);
+    --color-white-80: rgba(255, 255, 255, 0.8);
+    --color-white-70: rgba(255, 255, 255, 0.7);
+    --color-white-50: rgba(255, 255, 255, 0.5);
+    --color-white-30: rgba(255, 255, 255, 0.3);
+    --color-white-20: rgba(255, 255, 255, 0.2);
+    --color-white-15: rgba(255, 255, 255, 0.15);
+    --color-white-10: rgba(255, 255, 255, 0.1);
+
+    /* ==================== Black & Transparent ==================== */
+    --color-black: #000000;
+    --color-black-60: rgba(0, 0, 0, 0.6);
+    --color-black-15: rgba(0, 0, 0, 0.15);
+    --color-black-10: rgba(0, 0, 0, 0.1);
+    --color-black-05: rgba(0, 0, 0, 0.05);
+    --color-black-02: rgba(0, 0, 0, 0.02);
+
+    /* ==================== Overlay Colors ==================== */
+    --color-overlay-dark: rgba(15, 23, 42, 0.5);
+    --color-overlay-dark-90: rgba(15, 23, 42, 0.9);
+    --color-overlay-gray: rgba(33, 37, 41, 0.8);
+    --color-overlay-gray-90: rgba(33, 37, 41, 0.9);
+
+    /* ==================== Red / Danger Colors ==================== */
+    --color-red-600: #dc2626;
+    --color-red-700: #b91c1c;
+    --color-red-800: #991b1b;
+    --color-red-900: #7f1d1d;
+    --color-red-bg: rgba(220, 38, 38, 0.08);
+    --color-red-border: rgba(220, 38, 38, 0.2);
+
+    /* ==================== Green / Success Colors ==================== */
+    --color-green-600: #059669;
+
+    /* ==================== Gray Colors ==================== */
+    --color-gray-100: #f8f9fa;
+    --color-gray-200: #f3f4f6;
+    --color-gray-300: #e5e7eb;
+    --color-gray-400: #cbd5e1;
+    --color-gray-500: #999999;
+    --color-gray-600: #666666;
+    --color-gray-700: #4b5563;
+    --color-gray-800: #374151;
+    --color-gray-900: #333333;
+    --color-slate-800: #1e293b;
+    --color-border-alt: #d0d7de;
+
+    /* ==================== Cyan / Info Colors ==================== */
+    --color-cyan-500: #0ea5e9;
+    --color-cyan-bg: rgba(14, 165, 233, 0.15);
+
+    /* ==================== Blue Link Colors ==================== */
+    --color-link-bg: rgba(0, 123, 255, 0.1);
+    --color-link-bg-hover: #f0f8ff;
+
+    /* ==================== Backgrounds ==================== */
+    --color-bg-body: var(--color-white);
     --color-bg-surface: #f8fafc;
-    /* Very light gray for panels/cards */
     --color-bg-surface-hover: #f1f5f9;
-    --color-bg-overlay: rgba(255, 255, 255, 0.9);
-    --color-bg-gray: #f3f4f6;
-    /* Gray 100 */
-    --color-bg-gray-dark: #e5e7eb;
-    /* Gray 200 */
+    --color-bg-overlay: var(--color-white-90);
+    --color-bg-gray: var(--color-gray-200);
+    --color-bg-gray-dark: var(--color-gray-300);
     --color-primary-bg: rgba(79, 70, 229, 0.08);
-    /* Primary with opacity */
 
-    /* Text */
+    /* ==================== Text ==================== */
     --color-text-primary: #0f172a;
-    /* Slate 900 */
     --color-text-secondary: #475569;
-    /* Slate 600 */
     --color-text-muted: #94a3b8;
-    /* Slate 400 */
-    --color-text-on-accent: #ffffff;
+    --color-text-on-accent: var(--color-white);
+    --color-text-gray: #6e7781;
 
-    /* Borders */
+    /* ==================== Borders ==================== */
     --color-border: #e2e8f0;
-    /* Slate 200 */
-    --color-border-hover: #cbd5e1;
-    /* Slate 300 */
+    --color-border-hover: var(--color-gray-400);
 
-    /* Semantic Colors */
+    /* ==================== Semantic Colors ==================== */
     --color-success: #10b981;
     --color-danger: #ef4444;
     --color-warning: #f59e0b;

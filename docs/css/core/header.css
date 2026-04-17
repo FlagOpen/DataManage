@@ -23,14 +23,14 @@
     width: fit-content;
     max-width: min(600px, 90vw);
     max-height: 80vh;
-    background: #ffffff;
-    border: 1px solid var(--color-border);
-    color: var(--color-text-primary);
+    background: var(--color-blue-500);
+    border: 2px solid var(--color-white-30);
+    color: var(--color-white);
     box-shadow: var(--shadow-lg);
 }
 
 .global-banner.nav-dropdown .global-banner-content {
-    color: var(--color-text-primary);
+    color: var(--color-white);
     font-size: 0.875rem;
     line-height: 1.6;
     text-align: left;
@@ -53,22 +53,22 @@
 }
 
 .global-banner.nav-dropdown .global-banner-title {
-    color: var(--color-text-primary);
+    color: var(--color-white);
 }
 
 .global-banner.nav-dropdown .global-banner-header {
-    border-bottom-color: var(--color-border);
+    border-bottom: 2px solid var(--color-white-30);
 }
 
 .global-banner-important {
-    color: #dc2626 !important; /* Red 600 */
+    color: var(--color-red-600) !important;
     font-size: 0.8125rem !important;
     font-weight: 700 !important;
-    background: rgba(220, 38, 38, 0.08) !important; /* Light red background */
+    background: var(--color-red-bg) !important;
     padding: 0.625rem 0.75rem !important;
     border-radius: 0.25rem !important;
-    border: 1px solid rgba(220, 38, 38, 0.2) !important;
-    box-shadow: 0 1px 2px rgba(220, 38, 38, 0.1) !important;
+    border: 1px solid var(--color-red-border) !important;
+    box-shadow: 0 1px 2px var(--color-red-border) !important;
     margin: 0.25rem 0 0.75rem 0;
 }
 
@@ -88,7 +88,7 @@
 
 .global-banner-note {
     margin: 0.5rem 0 0 0;
-    color: #7f1d1d;
+    color: var(--color-red-900);
 }
 
 .global-banner-help {
@@ -97,16 +97,31 @@
 }
 
 .global-banner.nav-dropdown.global-banner-warning {
-    background: #ffffff;
-    border-color: var(--color-border);
-    color: var(--color-text-primary);
+    background: var(--color-blue-500);
+    border: 2px solid var(--color-white-30);
+    color: var(--color-white);
 }
 
 .global-banner code {
-    background: rgba(15, 23, 42, 0.08);
-    color: var(--color-text-primary);
+    background: var(--color-white-15);
+    color: var(--color-white);
     padding: 0.1rem 0.3rem;
     border-radius: 4px;
+}
+
+/* Links in dropdown menus - white/light colors on blue background */
+.global-banner a,
+.nav-dropdown a {
+    color: var(--color-white-90);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: color 0.2s ease;
+}
+
+.global-banner a:hover,
+.nav-dropdown a:hover {
+    color: #ffd166;
+    text-decoration: underline;
 }
 
 /* ==================== Header with Nav Buttons ==================== */
@@ -114,8 +129,8 @@
     width: 100%;
     padding: 1rem 1.25rem;
     background: var(--color-accent-gradient);
-    border-bottom: 1px solid #cbd5e1;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid var(--color-gray-400);
+    box-shadow: 0 1px 3px var(--color-black-10);
 }
 
 .header-content {
@@ -131,16 +146,16 @@
     font-family: var(--font-family-sans);
     font-size: clamp(0.875rem, 0.75rem + 0.5vw, 1.25rem);
     font-weight: 600;
-    color: #ffffff;
+    color: var(--color-white);
     line-height: 1.2;
     text-align: center;
-    text-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.2);
+    text-shadow: 0 0.125rem 0.25rem var(--color-black-10);
 }
 
 .header-buttons {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 1rem;
     margin-left: auto;
 }
 
@@ -148,16 +163,18 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0.25rem 1rem;
+    min-width: 5rem;
+    height: 2rem;
+    padding: 0 1rem;
     font-size: clamp(0.625rem, 0.5625rem + 0.25vw, 0.875rem);
     font-weight: 600;
     font-family: var(--font-family-sans);
-    color: #ffffff;
+    color: var(--color-white);
     background: var(--color-primary);
     border: 1px solid var(--color-primary-dark);
     border-radius: 2rem;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 2px var(--color-black-10);
+    text-shadow: 0 1px 2px var(--color-black-10);
     letter-spacing: 0.05em;
     transition: all 0.15s ease;
     cursor: pointer;
@@ -167,7 +184,7 @@
 .nav-btn:hover {
     background: var(--color-primary-hover);
     border-color: var(--color-primary-deep);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 1px 3px var(--color-black-15);
     transform: translateY(-1px);
 }
 
@@ -178,7 +195,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(15, 23, 42, 0.5);
+    background: var(--color-overlay-dark);
     z-index: 1000;
     display: none;
     align-items: flex-start;
@@ -192,8 +209,9 @@
 }
 
 .nav-dropdown {
-    background: white;
+    background: var(--color-blue-500);
     border-radius: var(--border-radius-lg);
+    border: 2px solid var(--color-white-30);
     box-shadow: var(--shadow-lg);
     width: 100%;
     max-width: min(600px, 90vw);
@@ -207,7 +225,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 1rem 1.5rem;
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: 2px solid var(--color-white-30);
 }
 
 .nav-dropdown-title {
@@ -215,34 +233,35 @@
     font-family: var(--font-family-sans);
     font-size: 1.25rem;
     font-weight: 700;
-    color: var(--color-text-primary);
+    color: var(--color-white);
 }
 
 .nav-dropdown-close {
     width: 2rem;
     height: 2rem;
     border-radius: 9999px;
-    border: 1px solid var(--color-border);
-    background: var(--color-bg-surface);
+    border: 1px solid var(--color-white-50);
+    background: var(--color-white-10);
     display: inline-flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     font-size: 1.25rem;
-    color: var(--color-text-muted);
+    color: var(--color-white);
     transition: all 0.2s ease;
 }
 
 .nav-dropdown-close:hover {
-    border-color: var(--color-danger);
-    color: var(--color-danger);
+    border-color: var(--color-white);
+    background: var(--color-white-20);
+    color: var(--color-white);
 }
 
 .nav-dropdown-content {
     flex: 1;
     overflow-y: auto;
     padding: 1.5rem;
-    color: var(--color-text-primary);
+    color: var(--color-white);
     line-height: 1.6;
     white-space: pre-wrap;
 }

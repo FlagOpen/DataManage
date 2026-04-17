@@ -4,14 +4,11 @@
     z-index: 1100;
     pointer-events: none;
     opacity: 0;
-    /* Use transform for positioning - set by JavaScript */
     left: 0;
     top: 0;
-    /* Optimize transitions - only opacity and transform */
     transition: opacity 0.15s ease, transform 0.15s ease;
-    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+    filter: drop-shadow(0 4px 6px var(--color-black-10));
     will-change: transform, opacity;
-    /* GPU acceleration hints */
 }
 
 .filter-tooltip.show {
@@ -19,9 +16,9 @@
 }
 
 .filter-tooltip-content {
-    background: rgba(15, 23, 42, 0.9);
+    background: var(--color-overlay-dark-90);
     backdrop-filter: blur(4px);
-    color: white;
+    color: var(--color-white);
     padding: 0.5rem 0.75rem;
     border-radius: 0.5rem;
     font-size: 0.75rem;
@@ -36,7 +33,7 @@
 }
 
 .filter-tooltip-count {
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--color-white-80);
     font-size: 0.6875rem;
 }
 
@@ -57,7 +54,7 @@
     bottom: -6px;
     left: 50%;
     transform: translateX(-50%);
-    border-top-color: rgba(15, 23, 42, 0.9);
+    border-top-color: var(--color-overlay-dark-90);
 }
 
 .filter-tooltip.tooltip-bottom {
@@ -68,5 +65,5 @@
     top: -6px;
     left: 50%;
     transform: translateX(-50%);
-    border-bottom-color: rgba(15, 23, 42, 0.9);
+    border-bottom-color: var(--color-overlay-dark-90);
 }

@@ -1,7 +1,7 @@
 /* ==================== Filter Control Bar ==================== */
 .filter-control-bar {
     width: 100%;
-    background: rgba(255, 255, 255, 0.8);
+    background: var(--color-white-80);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--color-border);
     position: sticky;
@@ -30,13 +30,12 @@
     padding: 0.5rem 1rem;
     height: var(--button-height);
     border-radius: 9999px;
-    /* Pill shape */
     font-size: 0.875rem;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     border: 1px solid var(--color-border);
-    background: rgb(255, 255, 255);
+    background: var(--color-white);
     color: var(--color-text-secondary);
     box-shadow: var(--shadow-sm);
 }
@@ -59,7 +58,7 @@
 
 /* Primary Filter Trigger */
 .filter-trigger-btn {
-    background: white;
+    background: var(--color-white);
     border-color: var(--color-primary-light);
     color: var(--color-primary);
     font-weight: bold;
@@ -67,7 +66,7 @@
 
 .filter-trigger-btn:hover {
     background: var(--color-primary);
-    color: white;
+    color: var(--color-white);
 }
 
 .filter-trigger-count {
@@ -78,7 +77,7 @@
     height: 1.25rem;
     padding: 0 0.375rem;
     background: var(--color-primary);
-    color: white;
+    color: var(--color-white);
     border-radius: 9999px;
     font-size: 0.75rem;
     font-weight: 700;
@@ -86,7 +85,7 @@
 }
 
 .filter-trigger-btn:hover .filter-trigger-count {
-    background: white;
+    background: var(--color-white);
     color: var(--color-primary);
 }
 
@@ -100,36 +99,35 @@
 }
 
 .btn-toolbar.primary {
-    background: white;
+    background: var(--color-white);
     color: var(--color-primary);
     border-color: var(--color-primary);
 }
 
 .btn-toolbar.primary:hover {
     background: var(--color-primary);
-    color: white;
+    color: var(--color-white);
 }
 
 .btn-toolbar.danger {
     color: var(--color-danger);
     border-color: var(--color-danger);
-    background: white;
+    background: var(--color-white);
 }
 
 .btn-toolbar.danger:hover {
     background: var(--color-danger);
-    color: white;
+    color: var(--color-white);
 }
 
 .btn-toolbar.success {
     background: var(--color-success);
-    color: white;
+    color: var(--color-white);
     border: none;
 }
 
 .btn-toolbar.success:hover {
-    background: #059669;
-    /* Darker green */
+    background: var(--color-green-600);
 }
 
 /* Left Toolbar Controls */
@@ -168,7 +166,7 @@
 
 .filter-search-input:focus {
     border-color: var(--color-accent);
-    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+    box-shadow: 0 0 0 3px var(--color-cyan-bg);
     outline: none;
 }
 
@@ -193,12 +191,12 @@
 }
 
 .search-clear-btn:hover {
-    background: rgba(0, 0, 0, 0.05);
+    background: var(--color-black-05);
     color: var(--color-text-primary);
 }
 
 .search-clear-btn:active {
-    background: rgba(0, 0, 0, 0.1);
+    background: var(--color-black-10);
     transform: translateY(-50%) scale(0.95);
 }
 
@@ -239,16 +237,16 @@
 
 /* Reset Button Hover Effect - dark gray background, white text, black border */
 #resetFiltersBtn:hover {
-    background: #374151;
-    color: white;
-    border-color: black;
+    background: var(--color-gray-800);
+    color: var(--color-white);
+    border-color: var(--color-black);
     transform: translateY(-1px);
     box-shadow: var(--shadow-md);
 }
 
 /* Reset Button Active Effect - black border */
 #resetFiltersBtn:active {
-    border-color: black;
+    border-color: var(--color-black);
     transform: translateY(0);
     box-shadow: var(--shadow-sm);
 }

@@ -7,17 +7,16 @@
 .video-hover-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(255, 255, 255, 0.9);
+    background: var(--color-white-90);
     backdrop-filter: blur(1px);
     -webkit-backdrop-filter: blur(1px);
-    color: #000000;
+    color: var(--color-black);
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
     transition: opacity 0.3s ease, visibility 0.3s ease;
     display: flex;
     flex-direction: column;
-    /* 性能优化 */
     will-change: opacity;
     transform: translateZ(0);
     contain: layout style paint;
@@ -51,15 +50,15 @@
     font-size: 0.9375rem;
     font-weight: 600;
     line-height: 1.4;
-    margin: 0 0 0.5rem 0; /* Add top margin to avoid overlapping with hint text */
-    color: #000000;
+    margin: 0 0 0.5rem 0;
+    color: var(--color-black);
     word-break: break-word;
     overflow-wrap: anywhere;
     hyphens: auto;
 }
 
 .video-hover-title:hover {
-    color: #2563eb;
+    color: var(--color-blue-600);
     text-decoration: underline;
 }
 

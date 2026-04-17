@@ -74,6 +74,7 @@ button {
 
 /* ==================== Selection & Focus ==================== */
 ::selection {
+    background: var(--color-blue-600);
     background: rgba(59, 130, 246, 0.3);
     color: inherit;
 }

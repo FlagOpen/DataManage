@@ -43,7 +43,7 @@
 
 .filter-dropdown-content .filter-option.selected .filter-option-count {
     background: var(--color-primary-dark);
-    color: white;
+    color: var(--color-white);
 }
 
 /* Labels & Counts */
@@ -106,9 +106,8 @@
     font-size: 0.75rem;
     border-radius: 9999px;
     border: 1px solid var(--color-border);
-    background: white;
+    background: var(--color-white);
     cursor: pointer;
-    /* Only transition colors */
     transition: border-color 0.15s ease, color 0.15s ease;
 }
 
@@ -149,7 +148,7 @@
     justify-content: center;
     border: 1px solid var(--color-border);
     border-radius: 9999px;
-    background: white;
+    background: var(--color-white);
     cursor: pointer;
     transition: all 0.2s ease;
 }
@@ -173,7 +172,7 @@
     height: 2rem;
     border: 1px solid var(--color-border);
     border-radius: 9999px;
-    background: white;
+    background: var(--color-white);
     cursor: pointer;
     transition: all 0.2s ease;
     opacity: 0;
@@ -255,7 +254,7 @@
 }
 
 .filter-group-title-checkbox:hover {
-    background-color: rgba(0, 123, 255, 0.1);
+    background-color: var(--color-link-bg);
 }
 
 .filter-group-title-checkbox input[type="checkbox"] {
@@ -263,15 +262,15 @@
     cursor: pointer;
     width: 1rem;
     height: 1rem;
-    accent-color: #0969da;
+    accent-color: var(--color-link);
 }
 
 .filter-group-title.highlight-title .filter-group-title-left {
-    color: #0969da;
+    color: var(--color-link);
 }
 
 .filter-group-title:hover {
-    color: #0969da;
+    color: var(--color-link);
 }
 
 .toggle-icon {
@@ -297,7 +296,7 @@
 }
 
 .filter-option.hierarchy-name-only .filter-option-label:hover {
-    background-color: #f0f8ff;
+    background-color: var(--color-link-bg-hover);
 }
 
 .filter-option.hierarchy-name-only .filter-option-label:hover .hierarchy-label {
@@ -313,7 +312,7 @@
 
 .filter-option-control:hover+* .hierarchy-label,
 .filter-option-control:hover~.filter-option-label .hierarchy-label {
-    color: #0969da;
+    color: var(--color-link);
     font-weight: 600;
 }
 
@@ -335,7 +334,7 @@
     width: 0.5rem;
     text-align: center;
     line-height: 1;
-    color: #6e7781;
+    color: var(--color-text-gray);
 }
 
 .hierarchy-spacer {
@@ -393,11 +392,11 @@
 }
 
 .filter-option-checkbox:hover {
-    background-color: rgba(9, 105, 218, 0.1);
+    background-color: var(--color-link-bg);
 }
 
 .filter-option-checkbox:hover .checkbox-label {
-    color: #0969da;
+    color: var(--color-link);
 }
 
 .filter-option input[type="checkbox"] {
@@ -405,15 +404,15 @@
     cursor: pointer;
     width: 1rem;
     height: 1rem;
-    accent-color: #0969da;
+    accent-color: var(--color-link);
 }
 
 .filter-option input[type="checkbox"]:checked {
-    background-color: #0969da;
+    background-color: var(--color-link);
 }
 
 .filter-option.highlight-label .filter-option-label {
-    color: #0969da;
+    color: var(--color-link);
     font-weight: 600;
 }
 
@@ -449,7 +448,7 @@
 }
 
 .filter-option.hierarchy-name-only:hover {
-    background-color: #f8f9fa;
+    background-color: var(--color-gray-100);
 }
 
 .hierarchy-label {
@@ -460,7 +459,7 @@
     display: inline-block;
     min-width: 1.875rem;
     text-align: right;
-    color: #999;
+    color: var(--color-gray-500);
     font-size: 0.6875rem;
     margin-left: 0;
     margin-right: 0;
@@ -475,21 +474,21 @@
 
 .filter-option-control-text {
     font-size: 0.6875rem;
-    color: #666;
+    color: var(--color-gray-600);
     white-space: nowrap;
     user-select: none;
 }
 
 .btn-filter:hover {
-    background: #f8f9fa;
+    background: var(--color-gray-100);
 }
 
 .btn-filter.primary {
-    background: #007bff;
-    color: white;
-    border-color: #007bff;
+    background: var(--color-link-hover);
+    color: var(--color-white);
+    border-color: var(--color-link-hover);
 }
 
 .btn-filter.primary:hover {
-    background: #0056b3;
+    background: var(--color-link-active);
 }

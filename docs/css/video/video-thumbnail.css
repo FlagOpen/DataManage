@@ -65,9 +65,9 @@
     width: 2.75rem;
     height: 2.75rem;
     border-radius: var(--border-radius-pill);
-    background: rgba(33, 37, 41, 0.8);
-    border: 1px solid rgba(33, 37, 41, 0.6);
-    color: white;
+    background: var(--color-overlay-gray);
+    border: 1px solid var(--color-overlay-gray);
+    color: var(--color-white);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -80,8 +80,8 @@
 }
 
 .download-button:hover {
-    background: rgba(33, 37, 41, 0.9);
-    border-color: rgba(33, 37, 41, 0.8);
+    background: var(--color-overlay-gray-90);
+    border-color: var(--color-overlay-gray-90);
     opacity: 1;
     transform: scale(1.05);
 }
