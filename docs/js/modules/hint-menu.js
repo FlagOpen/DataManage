@@ -1,30 +1,21 @@
 /**
  * @file Hint Menu Module
- * @description Manage startup hint menu open/close behavior
+ * @description Fetch and display hint YAML content in dropdown
+ * @scenario: User sees hint popup on page load
  */
 
-import { bindCloseButton } from './dropdown-close.js';
+import ConfigManager from './config.js';
+import YamlDropdown from './yaml-dropdown.js';
 
-const HintMenu = {
-    overlay: null,
-    closeBtn: null,
-    isOpen: false,
-
-    init() {
-        this.overlay = document.getElementById('globalBannerOverlay');
-        this.closeBtn = document.getElementById('hintDropdownClose');
-        if (!this.overlay || !this.closeBtn) return;
-
-        this.isOpen = !this.overlay.classList.contains('global-banner-overlay-hidden');
-        bindCloseButton(this.closeBtn, () => this.close());
+const HintMenu = new YamlDropdown({
+    overlayId: 'globalBannerOverlay',
+    closeBtnId: 'hintDropdownClose',
+    contentId: 'hintContent',
+    get dataPath() {
+        const config = ConfigManager.getConfig();
+        return `${config.paths.assetsRoot}/hint/hint.yaml`;
     },
-
-    close() {
-        if (!this.overlay || !this.isOpen) return;
-        this.overlay.classList.add('global-banner-overlay-hidden');
-        this.isOpen = false;
-    }
-};
+    emptyMessage: 'No hints available.'
+});
 
 export default HintMenu;
-

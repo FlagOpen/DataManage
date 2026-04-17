@@ -18,7 +18,7 @@
           ├── thumbnails/         - Thumbnail images (*.jpg, provided by assets/thumbnails)
           └── videos/             - MP4 video files (*.mp4)
     -->
-    <link rel="stylesheet" href="./css/style.css?v=20260415-214900">
+    <link rel="stylesheet" href="./css/style.css?v=20260417-008">
 
     <link rel="icon" href="./favicon.ico" type="image/x-icon">
 
@@ -27,24 +27,13 @@
 </head>
 
 <body>
-    <div class="global-banner-overlay nav-dropdown-overlay active" id="globalBannerOverlay">
-        <div class="global-banner nav-dropdown global-banner-warning" id="globalBanner" role="dialog" aria-modal="true" aria-label="RoboCOIN Hint Menu">
-            <div class="nav-dropdown-header global-banner-header">
-                <h3 class="nav-dropdown-title global-banner-title">Hint</h3>
+    <div class="nav-dropdown-overlay active" id="globalBannerOverlay">
+        <div class="nav-dropdown" id="globalBanner" role="dialog" aria-modal="true" aria-label="RoboCOIN Hint Menu">
+            <div class="nav-dropdown-header">
+                <h3 class="nav-dropdown-title">Hint</h3>
                 <button class="nav-dropdown-close" id="hintDropdownClose">&times;</button>
             </div>
-            <div class="nav-dropdown-content global-banner-content">
-                <p class="global-banner-text">
-                    RoboCOIN source code is available at
-                    <a href="https://github.com/FlagOpen/RoboCOIN" target="_blank" rel="noopener noreferrer">github.com/FlagOpen/RoboCOIN</a>.
-                    Install the Python package first with <code>pip install robocoin</code>.
-                    Before downloading datasets, visit
-                    <a href="https://huggingface.co/RoboCOIN" target="_blank" rel="noopener noreferrer">huggingface.co/RoboCOIN</a>,
-                    open any dataset page, and submit the access request to avoid permission errors.
-                    Access requests are auto-approved after submission.
-                    Help us improve RoboCOIN by reporting issues and feedback.
-                </p>
-            </div>
+            <div class="nav-dropdown-content" id="hintContent">Loading...</div>
         </div>
     </div>
 
@@ -82,8 +71,10 @@
         <div class="nav-dropdown" id="newsDropdown">
             <div class="nav-dropdown-header">
                 <h3 class="nav-dropdown-title">News</h3>
-                <button class="nav-btn" id="newsLangToggleBtn" style="margin-left: auto; margin-right: 8px; padding: 4px 8px; font-size: 12px;">EN</button>
-                <button class="nav-dropdown-close" id="newsDropdownClose">&times;</button>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <button class="nav-dropdown-close nav-dropdown-lang-btn" id="newsLangToggleBtn">EN</button>
+                    <button class="nav-dropdown-close" id="newsDropdownClose">&times;</button>
+                </div>
             </div>
             <div class="nav-dropdown-content" id="newsContent">Loading...</div>
         </div>
@@ -94,8 +85,10 @@
         <div class="nav-dropdown" id="issueDropdown">
             <div class="nav-dropdown-header">
                 <h3 class="nav-dropdown-title">Issues</h3>
-                <button class="nav-btn" id="issueLangToggleBtn" style="margin-left: auto; margin-right: 8px; padding: 4px 8px; font-size: 12px;">EN</button>
-                <button class="nav-dropdown-close" id="issueDropdownClose">&times;</button>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <button class="nav-dropdown-close nav-dropdown-lang-btn" id="issueLangToggleBtn">EN</button>
+                    <button class="nav-dropdown-close" id="issueDropdownClose">&times;</button>
+                </div>
             </div>
             <div class="nav-dropdown-content" id="issueContent">Loading...</div>
         </div>
@@ -226,7 +219,7 @@
 
     <!-- Debug utilities for high DPI display optimization -->
     <!-- <script src="./js/debug.js?v=20251124-200355"></script> -->
-    <script type="module" src="./js/main.js?v=20260415-213500"></script>
+    <script type="module" src="./js/main.js?v=20260417-005"></script>
     <script>
         (function () {
             var STORAGE_KEY = 'robocoin-docs-etag';
