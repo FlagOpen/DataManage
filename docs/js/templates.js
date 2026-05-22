@@ -268,10 +268,7 @@ const Templates = {
 
         // Objects
         if (ds.objects && ds.objects.length > 0) {
-            const objectNames = ds.objects.map(obj => obj.object_name || obj.name).filter(name => name);
-            if (objectNames.length > 0) {
-                html += `<strong>Objects:</strong> ${objectNames.join(', ')}<br>`;
-            }
+            html += `<strong>Objects:</strong> ${ds.objects.join(', ')}<br>`;
         }
 
         // Camera information
@@ -368,10 +365,7 @@ const Templates = {
 
         let objectsHTML = 'N/A';
         if (Array.isArray(dataset.objects) && dataset.objects.length > 0) {
-            objectsHTML = dataset.objects.map(obj => {
-                const hierarchyText = (obj.hierarchy || []).filter(Boolean).slice(0, 3).join(' > ');
-                return `<div style="margin-bottom: 4px;">• ${obj.name || ''} (${hierarchyText})</div>`;
-            }).join('');
+            objectsHTML = dataset.objects.map(name => `<div style="margin-bottom: 4px;">• ${name}</div>`).join('');
         }
 
         return `

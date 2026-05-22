@@ -15,7 +15,7 @@ const IssueMenu = new YamlDropdown({
     langToggleBtnId: 'issueLangToggleBtn',
     get dataPath() {
         const config = ConfigManager.getConfig();
-        return `${config.paths.assetsRoot}/issue/issues.yaml`;
+        return `${config.paths.assetsRoot}/doc_assets/issue/issues.yaml`;
     },
     emptyMessage: 'No issues available.'
 });

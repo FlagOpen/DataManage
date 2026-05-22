@@ -4,12 +4,6 @@
  */
 
 /**
- * @typedef {Object} DatasetObject
- * @property {string} name - Object name (page field: object_name)
- * @property {string[]} hierarchy - Object hierarchy levels (level1..level5)
- */
-
-/**
  * @typedef {Object} Dataset
  * @property {string} path - Dataset path identifier
  * @property {string} name - Dataset original name (hub identifier)
@@ -19,15 +13,13 @@
  * @property {string} description - Task description
  * @property {string[]} scenes - Scene types
  * @property {string[]} actions - Atomic actions
- * @property {DatasetObject[]} objects - Operation objects
+ * @property {string[]} objects - Operation object names
  * @property {string|string[]} robot - Robot model(s)
  * @property {string[]} endEffectors - End effector types (flat list)
  * @property {string} [endEffector] - Primary end effector (legacy single value)
  * @property {number} platformHeight - Operation platform height
  * @property {function(): string[]} getAllScenes - Get all scenes
  * @property {function(string): boolean} hasScene - Check if has scene
- * @property {function(number, string): DatasetObject[]} getObjectsByLevel - Get objects by level
- * @property {function(): string[]} getTopLevelCategories - Get top level categories
  */
 
 /**

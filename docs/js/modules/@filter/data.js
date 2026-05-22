@@ -62,8 +62,8 @@ export function buildFilterGroups(datasets, normalizeRobot) {
         },
         'object': {
             title: 'operation object',
-            values: new Map(),
-            type: 'hierarchical'
+            values: new Set(),
+            type: 'flat'
         }
     };
 
@@ -91,8 +91,8 @@ export function buildFilterGroups(datasets, normalizeRobot) {
         }
 
         if (ds.objects) {
-            ds.objects.forEach(obj => {
-                addToHierarchy(groups.object.values, obj.hierarchy);
+            ds.objects.forEach(objName => {
+                if (objName) groups.object.values.add(objName);
             });
         }
     });
@@ -126,9 +126,7 @@ export function calculateAffectedCount(datasets, filterKey, filterValue, normali
         } else if (filterKey === 'action') {
             match = ds.actions && ds.actions.includes(filterValue);
         } else if (filterKey === 'object') {
-            match = ds.objects && ds.objects.some(obj =>
-                obj.hierarchy.includes(filterValue)
-            );
+            match = ds.objects && ds.objects.includes(filterValue);
         }
 
         if (match) count++;

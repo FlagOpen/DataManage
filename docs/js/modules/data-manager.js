@@ -90,10 +90,14 @@ export class DataManager {
                     const allData = await res.json();
                     loadingBar.style.width = '75%';
 
-                    const datasetCount = Object.keys(allData).length;
+                    // Filter out meta keys (e.g. _summary) that are not dataset entries
+                    const META_KEY_PREFIX = '_';
+                    const datasetEntries = Object.entries(allData).filter(([key]) => !key.startsWith(META_KEY_PREFIX));
+
+                    const datasetCount = datasetEntries.length;
                     console.log(`OK: Loaded ${datasetCount} datasets from consolidated JSON`);
 
-                    this.datasets = Object.entries(allData).map(([path, raw]) => this.createDatasetObject(path, raw));
+                    this.datasets = datasetEntries.map(([path, raw]) => this.createDatasetObject(path, raw));
                     this.applyExclusions();
 
                     loadingProgress.textContent = `${this.datasets.length} datasets loaded`;
@@ -267,18 +271,7 @@ export class DataManager {
             scenes: sceneTypeArr,
             actions: atomicActions,
             atomic_actions: atomicActions,
-            objects: (function() {
-                return rawObjects.map(obj => ({
-                    name: obj.object_name,
-                    hierarchy: [
-                        obj.level1,
-                        obj.level2,
-                        obj.level3,
-                        obj.level4,
-                        obj.level5
-                    ].filter(level => level !== null && level !== undefined)
-                }));
-            })(),
+            objects: rawObjects.map(obj => obj.object_name || obj.name || '').filter(Boolean),
             robot: robotType || undefined,
             endEffector: endEffectors[0] || undefined,
             endEffectors,
@@ -317,13 +310,7 @@ export class DataManager {
             tasks: tasksStr,
 
             getAllScenes: function() { return this.scenes?.hierarchy || []; },
-            hasScene: function(sceneType) { return (this.scenes?.hierarchy || []).includes(sceneType); },
-            getObjectsByLevel: function(level, value) {
-                return this.objects.filter(obj => obj.hierarchy[level - 1] === value);
-            },
-            getTopLevelCategories: function() {
-                return [...new Set(this.objects.map(obj => obj.hierarchy[0]))];
-            }
+            hasScene: function(sceneType) { return (this.scenes?.hierarchy || []).includes(sceneType); }
         };
     }
 

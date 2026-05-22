@@ -15,7 +15,7 @@ const NewsMenu = new YamlDropdown({
     langToggleBtnId: 'newsLangToggleBtn',
     get dataPath() {
         const config = ConfigManager.getConfig();
-        return `${config.paths.assetsRoot}/news/news.yaml`;
+        return `${config.paths.assetsRoot}/doc_assets/news/news.yaml`;
     },
     emptyMessage: 'No news available.'
 });

@@ -11,9 +11,10 @@ const HintMenu = new YamlDropdown({
     overlayId: 'globalBannerOverlay',
     closeBtnId: 'hintDropdownClose',
     contentId: 'hintContent',
+    langToggleBtnId: 'hintLangToggleBtn',
     get dataPath() {
         const config = ConfigManager.getConfig();
-        return `${config.paths.assetsRoot}/hint/hint.yaml`;
+        return `${config.paths.assetsRoot}/doc_assets/hint/hint.yaml`;
     },
     emptyMessage: 'No hints available.'
 });

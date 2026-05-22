@@ -386,9 +386,7 @@ export class FilterManager {
                 } else if (key === 'action') {
                     match = ds.actions && ds.actions.some(a => values.includes(a));
                 } else if (key === 'object') {
-                    match = ds.objects && ds.objects.some(obj =>
-                        obj.hierarchy.some(h => values.includes(h))
-                    );
+                    match = ds.objects && ds.objects.some(objName => values.includes(objName));
                 }
 
                 if (!match) return false;
@@ -666,9 +664,7 @@ export class FilterManager {
             } else if (filterKey === 'action') {
                 match = ds.actions && ds.actions.includes(filterValue);
             } else if (filterKey === 'object') {
-                match = ds.objects && ds.objects.some(obj =>
-                    obj.hierarchy.includes(filterValue)
-                );
+                match = ds.objects && ds.objects.includes(filterValue);
             }
 
             if (match) count++;
