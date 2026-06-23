@@ -2,7 +2,7 @@
   "assets": {
     "useLocalAssets": false,
     "localAssetsPath": "../pageAssets",
-    "defaultRemoteAssetsRoot": "https://huggingface.co/datasets/RoboCOIN/pageAssets/resolve/main"
+    "defaultRemoteAssetsRoot": "https://huggingface.co/datasets/RoboCOIN/pageAssets/tree/main"
   },
   "downloadCommand": {
     "command": "robocoin-download",

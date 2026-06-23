@@ -3,6 +3,8 @@
  * @description Centralized configuration management for the RoboCOIN application
  */
 
+import HubDatasetNamesManager from './hub-dataset-names.js';
+
 /**
  * @typedef {Object} GridConfig
  * @property {number} minCardWidth - Minimum card width in pixels
@@ -190,7 +192,11 @@ class ConfigManager {
             return fallback;
         }
 
-        return normalized;
+        // HuggingFace browser URLs use /tree/main; raw file fetches need /resolve/main.
+        if (/huggingface\.co\/datasets\/[^/]+\/[^/]+$/i.test(normalized)) {
+            return `${normalized}/resolve/main`;
+        }
+        return normalized.replace(/\/tree\/main$/i, '/resolve/main');
     }
 
     /**
@@ -290,7 +296,9 @@ class ConfigManager {
             assets: {
                 useLocalAssets: this.getJsonValue('assets.useLocalAssets', false),
                 localAssetsPath: this.getJsonValue('assets.localAssetsPath', '../robocoin_datamanager_assets'),
-                defaultRemoteAssetsRoot: this.getJsonValue('assets.defaultRemoteAssetsRoot', 'https://huggingface.co/datasets/RogersPyke/robocoin_datamanager_assets/resolve/main')
+                defaultRemoteAssetsRoot: this.getJsonValue('assets.defaultRemoteAssetsRoot', 'https://huggingface.co/datasets/RogersPyke/robocoin_datamanager_assets/resolve/main'),
+                useBundledConsolidated: this.getJsonValue('assets.useBundledConsolidated', false),
+                bundledConsolidatedPath: this.getJsonValue('assets.bundledConsolidatedPath', './assets/info/consolidated_datasets.json')
             },
             layout: {
                 contentPadding: getValue('--content-padding', 'defaults.layout.contentPadding', 12)
@@ -347,7 +355,8 @@ class ConfigManager {
                 assetsRoot,
                 info: infoPath,  // JSON index files following standard structure
                 datasetInfo: datasetInfoPath,
-                videos: videosPath
+                videos: videosPath,
+                bundledConsolidated: this.getJsonValue('assets.bundledConsolidatedPath', './assets/info/consolidated_datasets.json')
             },
             // Download command format configuration
             // Loaded from config.json for easy editing
@@ -509,7 +518,8 @@ class ConfigManager {
      */
     static generateDownloadCommand(hub, datasets, datasetMap = undefined) {
         const config = this.getConfig().downloadCommand;
-        
+        const hubDatasets = HubDatasetNamesManager.resolveHubNames(datasets, hub);
+
         // First line: storage estimate comment (no blank line)
         const storageComment = this.buildRequiredStorageComment(datasets, datasetMap);
 
@@ -521,8 +531,8 @@ class ConfigManager {
         
         // Format: --ds_lists + each dataset on new line with continuation
         command += `${config.datasetsParam} `;
-        if (datasets.length > 0) {
-            const dsListContent = datasets.join(config.datasetSeparator);
+        if (hubDatasets.length > 0) {
+            const dsListContent = hubDatasets.join(config.datasetSeparator);
             command += `${dsListContent}${config.lineBreak}`;
         } else {
             command += `${config.lineBreak}`;

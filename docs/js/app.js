@@ -13,6 +13,7 @@ import SelectionPanelManager from './modules/selection-panel.js';
 import UIUtils from './modules/ui-utils.js';
 import EventHandlers from './modules/event-handlers.js';
 import RobotAliasManager from './modules/robot-aliases.js';
+import HubDatasetNamesManager from './modules/hub-dataset-names.js';
 import ErrorNotifier from './modules/error-notifier.js';
 import DownloadManager from './modules/download-manager.js';
 import NewsMenu from './modules/news-menu.js';
@@ -70,8 +71,9 @@ class Application {
                 console.warn('[APP] Failed to load download stats:', err);
             });
             
-            // Load robot alias map (non-blocking for core data, but awaited before UI init)
+            // Load robot alias map and hub dataset name mappings before UI init
             await RobotAliasManager.load(this.config);
+            await HubDatasetNamesManager.load(this.config);
             
             // Load datasets
             const loadingProgress = document.getElementById('loadingProgress');
